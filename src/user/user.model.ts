@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     },
     hasCar: {
       type: Boolean,
+      required: true,
     },
   },
   { _id: false });

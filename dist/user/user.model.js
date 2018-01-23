@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     hasCar: {
         type: Boolean,
+        required: true,
     },
 }, { _id: false });
 exports.user = mongoose.model('user', userSchema);
