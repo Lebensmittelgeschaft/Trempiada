@@ -6,35 +6,34 @@ exports.userController = {
         return user_model_1.user.find({}).then((res) => {
             return res;
         }).catch((err) => {
+            console.error(err);
             return null;
         });
     },
     getById(id) {
-        return user_model_1.user.findById(id).then((res) => {
+        return user_model_1.user.findById(id)
+            .then((res) => {
             return res;
         }).catch((err) => {
+            console.error(err);
             return null;
         });
     },
     save(user) {
-        if (user && (typeof user._id !== 'string' ||
-            typeof user.location !== 'string' ||
-            typeof user.hasCar !== 'boolean')) {
-            console.log(`Could not save user.`);
-            return null;
-        }
-        return user.save().then((res) => {
+        return user.save()
+            .then((res) => {
             return res;
         }).catch((err) => {
-            console.log(err);
+            console.error(err);
             return null;
         });
     },
     deleteById(id) {
-        return user_model_1.user.findByIdAndRemove(id).then((res) => {
+        return user_model_1.user.findByIdAndRemove(id)
+            .then((res) => {
             return res;
         }).catch((err) => {
-            console.log(err);
+            console.error(err);
             return null;
         });
     },
@@ -44,7 +43,8 @@ exports.userController = {
             return res;
         })
             .catch((err) => {
-            return err;
+            console.error(err);
+            return null;
         });
     },
 };

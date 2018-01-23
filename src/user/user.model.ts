@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema(
     _id: {
       type: String,
       required: true,
-      unique: true,
     },
     address: {
       type: String,
@@ -14,7 +13,6 @@ const userSchema = new mongoose.Schema(
     },
     hasCar: {
       type: Boolean,
-      default: false,
     },
   },
   { _id: false });

@@ -23,7 +23,7 @@ mongoose.connect(config_1.config.mongodbUrl, { useMongoClient: true }, (err) => 
         console.log(`Succeesfully connected to: ${config_1.config.mongodbUrl}`);
     }
 });
-before('Clear users DB.', () => __awaiter(this, void 0, void 0, function* () {
+before('Clear users test DB.', () => __awaiter(this, void 0, void 0, function* () {
     try {
         yield user_model_1.user.remove({});
     }
@@ -35,24 +35,24 @@ describe('User', () => {
     it('Should create a user.', () => __awaiter(this, void 0, void 0, function* () {
         const user = new user_model_1.user({
             _id: '0',
-            location: 'tel aviv',
+            address: 'tel aviv',
             hasCar: true,
         });
-        chai_1.expect(yield user.save()).to.exist;
+        chai_1.expect(yield user_manager_1.userController.save(user)).to.exist;
     }));
     it('Should find user.', () => __awaiter(this, void 0, void 0, function* () {
         const user = yield user_manager_1.userController.getById('0');
         chai_1.expect(user).to.exist;
-        chai_1.expect(user).to.have.property('location', 'tel aviv');
+        chai_1.expect(user).to.have.property('address', 'tel aviv');
         chai_1.expect(user).to.have.property('hasCar', true);
     }));
     it('Should update user.', () => __awaiter(this, void 0, void 0, function* () {
         const updatedUser = {
-            location: 'yavne',
+            address: 'yavne',
         };
         const userResult = yield user_manager_1.userController.updateById('0', updatedUser);
         chai_1.expect(userResult).to.exist;
-        chai_1.expect(userResult).to.have.property('location', 'yavne');
+        chai_1.expect(userResult).to.have.property('address', 'yavne');
     }));
     it('Should delete user.', () => __awaiter(this, void 0, void 0, function* () {
         chai_1.expect(yield user_manager_1.userController.deleteById('0')).to.exist;

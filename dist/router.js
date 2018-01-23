@@ -13,6 +13,5 @@ function getRoutes(app) {
     app.use('/', router);
     app.use('/users', users_route_1.router);
     app.use('/rides', rides_route_1.router);
-    return app;
 }
 exports.getRoutes = getRoutes;

@@ -14,67 +14,91 @@ const user_manager_1 = require("./user.manager");
 const router = express.Router();
 exports.router = router;
 /* GET all users. */
-router.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        res.json(yield user_manager_1.userController.getAll());
+router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const users = yield user_manager_1.userController.getAll();
+    if (users) {
+        res.json(users);
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
+    else {
+        res.sendStatus(500);
     }
 }));
 /* GET a user. */
-router.get('/:id', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        res.json(yield user_manager_1.userController.getById(req.query.id));
+router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    if (!req.params.id || typeof req.params.id !== 'string') {
+        res.sendStatus(400);
     }
-    catch (err) {
-        console.log(`Error finding user. ${err}`);
-        res.status(500).send();
+    else {
+        const user = yield user_manager_1.userController.getById(req.params.id);
+        if (user) {
+            res.json(user);
+        }
+        else {
+            res.sendStatus(404);
+        }
     }
 }));
 /* POST a user. */
-router.post('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const user = new user_model_1.user({
+router.post('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    if (!req.body.id ||
+        !req.body.address ||
+        !req.body.hasCar ||
+        (typeof req.body.id !== 'string' ||
+            typeof req.body.address !== 'string' ||
+            typeof req.body.hasCar !== 'boolean')) {
+        res.sendStatus(400);
+    }
+    else {
+        const userToSave = new user_model_1.user({
             _id: req.body.id,
-            location: req.body.location,
+            address: req.body.address,
             hasCar: req.body.hasCar,
         });
-        yield user.save();
-        console.log(`User ${user._id} saved.`);
-        res.status(200).send();
-    }
-    catch (err) {
-        console.log(`Error saving user to DB. ${err}`);
-        res.status(500).send();
+        const user = yield user_manager_1.userController.save(userToSave);
+        if (user) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(500);
+        }
     }
 }));
 /* DELETE a user. */
-router.delete('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        yield user_manager_1.userController.deleteById(req.body.id);
-        console.log(`Deleted user ${req.body.id}.`);
-        res.status(200).send();
+router.delete('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    if (!req.params.id || typeof req.params.id !== 'string') {
+        res.sendStatus(400);
     }
-    catch (err) {
-        console.log(`Error deleting user ${req.body.id}. ${err}`);
-        res.status(500).send();
+    else {
+        const user = yield user_manager_1.userController.deleteById(req.params.id);
+        if (user) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(404);
+        }
     }
 }));
 /* UPDATE a user's data. */
-router.put('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const user = {
-            location: req.body.location,
+router.put('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    if (!req.params.id ||
+        !req.body.address ||
+        !req.body.hasCar ||
+        typeof req.params.id !== 'string' ||
+        typeof req.body.address !== 'string' ||
+        typeof req.body.hasCar !== 'boolean') {
+        res.sendStatus(400);
+    }
+    else {
+        const userToUpdate = {
+            address: req.body.address,
             hasCar: req.body.hasCar,
         };
-        yield user_manager_1.userController.updateById(req.body.id, user);
-        console.log(`Updated user ${req.body.id}.`);
-        res.status(200).send();
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
+        const user = yield user_manager_1.userController.updateById(req.params.id, userToUpdate);
+        if (user) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(500);
+        }
     }
 }));

@@ -29,4 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 router_1.getRoutes(app);
 app.set('port', config_1.config.port);
 const server = http.createServer(app);
-server.listen(config_1.config.port);
+server.listen(config_1.config.port, () => {
+    console.log(`Server listening at address: ${server.address().address}
+   on port ${server.address().port}`);
+});

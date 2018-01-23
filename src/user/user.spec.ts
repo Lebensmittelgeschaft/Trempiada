@@ -31,7 +31,7 @@ describe('User', () => {
       hasCar: true,
     });
 
-    expect(await user.save()).to.exist;
+    expect(await userController.save(user)).to.exist;
   });
 
   it('Should find user.', async () => {
