@@ -34,18 +34,19 @@ router.get('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
             res.json(user);
         }
         else {
-            res.sendStatus(404);
+            res.sendStatus(404); // 500?
         }
     }
 }));
 /* POST a user. */
 router.post('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    // Checks if there's any invalid field.
     if (!req.body.id ||
         !req.body.address ||
         !req.body.hasCar ||
-        (typeof req.body.id !== 'string' ||
-            typeof req.body.address !== 'string' ||
-            typeof req.body.hasCar !== 'boolean')) {
+        typeof req.body.id !== 'string' ||
+        typeof req.body.address !== 'string' ||
+        typeof req.body.hasCar !== 'boolean') {
         res.sendStatus(400);
     }
     else {
@@ -80,6 +81,7 @@ router.delete('/:id', (req, res) => __awaiter(this, void 0, void 0, function* ()
 }));
 /* UPDATE a user's data. */
 router.put('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    // Checks if there's any invalid field.
     if (!req.params.id ||
         !req.body.address ||
         !req.body.hasCar ||

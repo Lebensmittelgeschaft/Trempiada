@@ -5,7 +5,7 @@ import { config } from '../config';
 
 export const rideController = {
   getAll() {
-    return Ride.find({})
+    return Ride.find({}).populate('user')
     .then((res) => {
       return res;
     })
@@ -17,10 +17,21 @@ export const rideController = {
   async getAllBeforeDeparture() {
     const rides = await rideController.getAll();
     const now = new Date().getTime();
-    return rides ? rides.filter(r => now < r.departure) : null;
+    return rides ? rides.filter(r => now < r.departureTime) : null;
   },
   getById(id: mongoose.Types.ObjectId) {
-    return Ride.findById(id)
+    return Ride.findById(id).populate('user')
+    .then((res) => {
+      console.log(res);
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
+  },
+  save(ride: IRide) {
+    return ride.save()
     .then((res) => {
       return res;
     })

@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
     if (user) {
       res.json(user);
     } else {
-      res.sendStatus(404);
+      res.sendStatus(404); // 500?
     }
   }
 });
@@ -31,12 +31,13 @@ router.get('/:id', async (req, res) => {
 /* POST a user. */
 router.post('/', async (req, res) => {
 
+  // Checks if there's any invalid field.
   if (!req.body.id ||
     !req.body.address ||
     !req.body.hasCar ||
-    (typeof req.body.id !== 'string' ||
-      typeof req.body.address !== 'string' ||
-      typeof req.body.hasCar !== 'boolean')) {
+    typeof req.body.id !== 'string' ||
+    typeof req.body.address !== 'string' ||
+    typeof req.body.hasCar !== 'boolean') {
     res.sendStatus(400);
   } else {
     const userToSave = new User({
@@ -70,6 +71,8 @@ router.delete('/:id', async (req, res) => {
 
 /* UPDATE a user's data. */
 router.put('/:id', async (req, res) => {
+
+  // Checks if there's any invalid field.
   if (!req.params.id ||
     !req.body.address ||
     !req.body.hasCar ||

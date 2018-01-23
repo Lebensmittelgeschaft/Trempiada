@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ride_model_1 = require("./ride.model");
 exports.rideController = {
     getAll() {
-        return ride_model_1.ride.find({})
+        return ride_model_1.ride.find({}).populate('user')
             .then((res) => {
             return res;
         })
@@ -24,11 +24,22 @@ exports.rideController = {
         return __awaiter(this, void 0, void 0, function* () {
             const rides = yield exports.rideController.getAll();
             const now = new Date().getTime();
-            return rides ? rides.filter(r => now < r.departure) : null;
+            return rides ? rides.filter(r => now < r.departureTime) : null;
         });
     },
     getById(id) {
-        return ride_model_1.ride.findById(id)
+        return ride_model_1.ride.findById(id).populate('user')
+            .then((res) => {
+            console.log(res);
+            return res;
+        })
+            .catch((err) => {
+            console.error(err);
+            return null;
+        });
+    },
+    save(ride) {
+        return ride.save()
             .then((res) => {
             return res;
         })

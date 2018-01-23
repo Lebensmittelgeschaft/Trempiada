@@ -6,5 +6,5 @@ export interface IRide extends Document {
   currentRiders: number;
   from: string;
   to: string;
-  departure: number;
+  departureTime: number;
 }

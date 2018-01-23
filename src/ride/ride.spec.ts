@@ -32,7 +32,7 @@ describe('Ride', () => {
       currentRiders: 1,
       from: 'dolphin',
       to: 'tel aviv',
-      departure: 1716179465155,
+      departureTime: 1716179465155,
     });
 
     const savedRide = await ride.save();
@@ -43,12 +43,13 @@ describe('Ride', () => {
   it('Should find ride.', async () => {
     const ride = await rideController.getById(rideId);
     expect(ride).to.exist;
-    expect(ride).to.have.property('user', '0');
+    expect(ride).to.have.property('user');
+    expect((ride as IRide).user).to.have.property('_id', '0');
     expect(ride).to.have.property('maxRiders', 4);
     expect(ride).to.have.property('currentRiders', 1);
     expect(ride).to.have.property('from', 'dolphin');
     expect(ride).to.have.property('to', 'tel aviv');
-    expect(ride).to.have.property('departure', 1716179465155);
+    expect(ride).to.have.property('departureTime', 1716179465155);
   });
 
   it('Should update ride.', async () => {

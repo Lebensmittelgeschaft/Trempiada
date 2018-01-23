@@ -14,83 +14,124 @@ const ride_manager_1 = require("./ride.manager");
 const router = express.Router();
 exports.router = router;
 /* GET all rides. */
-router.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        res.json(yield ride_manager_1.rideController.getAll());
+router.get('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    let rides = null;
+    if (req.body.active && req.body.active === true) {
+        rides = yield ride_manager_1.rideController.getAllBeforeDeparture();
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
+    else {
+        rides = yield ride_manager_1.rideController.getAll();
+    }
+    if (rides) {
+        res.json(rides);
+    }
+    else {
+        res.sendStatus(500);
     }
 }));
 /* GET all rides that are yet to depart. */
-router.get('/active', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        res.json(yield ride_manager_1.rideController.getAllBeforeDeparture());
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
-    }
-}));
+/* router.get('/active', async (req, res) => {
+  const rides = await rideController.getAllBeforeDeparture();
+  if (rides) {
+    res.json(rides);
+  } else {
+    res.sendStatus(500);
+  }
+}); */
 /* GET a ride. */
 router.get('/:id', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        res.json(yield ride_manager_1.rideController.getById(req.query.id));
+    if (!req.params.id || typeof req.params.id !== 'string') {
+        res.sendStatus(400);
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
+    else {
+        const ride = yield ride_manager_1.rideController.getById(req.params.id);
+        if (ride) {
+            res.json(ride);
+        }
+        else {
+            res.sendStatus(404); // 500?
+        }
     }
 }));
 /* POST a ride. */
 router.post('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    const ride = new ride_model_1.ride({
-        user: req.body.user,
-        maxRiders: req.body.maxRiders,
-        currentRiders: req.body.currentRiders,
-        from: req.body.from,
-        to: req.body.to,
-        departure: req.body.departure,
-    });
-    try {
-        yield ride.save();
-        console.log(`Ride ${ride._id} saved.`);
-        res.status(200).send();
+    // Checks if there's any invalid field.
+    if (!req.body.user ||
+        !req.body.maxRiders ||
+        !req.body.from ||
+        !req.body.to ||
+        (req.body.currentRiders && typeof req.body.currentRiders !== 'number') ||
+        (req.body.departureTime && typeof req.body.departureTime !== 'number') ||
+        typeof req.body.user !== 'string' ||
+        typeof req.body.maxRiders !== 'number' ||
+        typeof req.body.from !== 'string' ||
+        typeof req.body.to !== 'string') {
+        res.sendStatus(400);
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
-    }
-}));
-/* DELETE a ride. */
-router.delete('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        yield ride_manager_1.rideController.deleteById(req.body.id);
-        console.log(`Deleted ride ${req.body.id}.`);
-        res.status(200).send();
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
-    }
-}));
-router.put('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const ride = {
+    else {
+        const rideToSave = new ride_model_1.ride({
             user: req.body.user,
             maxRiders: req.body.maxRiders,
             currentRiders: req.body.currentRiders,
             from: req.body.from,
             to: req.body.to,
-            departure: req.body.departure,
-        };
-        yield ride_manager_1.rideController.updateById(req.body.id, ride);
-        console.log(`Updated ride ${req.body.id}.`);
-        res.status(200).send();
+            departureTime: req.body.departureTime,
+        });
+        const ride = yield ride_manager_1.rideController.save(rideToSave);
+        if (ride) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(500);
+        }
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send();
+}));
+/* DELETE a ride. */
+router.delete('/:id', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    if (!req.params.id || typeof req.params.id !== 'string') {
+        res.sendStatus(400);
+    }
+    else {
+        const ride = yield ride_manager_1.rideController.deleteById(req.params.id);
+        if (ride) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(404);
+        }
+    }
+}));
+router.put('/:id', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    // Checks if there's any invalid field.
+    if (!req.params.id ||
+        !req.body.user ||
+        !req.body.maxRiders ||
+        !req.body.from ||
+        !req.body.to ||
+        !req.body.departureTime ||
+        (req.body.currentRiders && typeof req.body.currentRiders !== 'number') ||
+        typeof req.body.user !== 'string' ||
+        typeof req.body.maxRiders !== 'number' ||
+        typeof req.body.from !== 'string' ||
+        typeof req.body.to !== 'string' ||
+        typeof req.body.departureTime !== 'number') {
+        res.sendStatus(400);
+    }
+    else {
+        const rideToUpdate = {
+            user: req.body.user,
+            maxRiders: req.body.maxRiders,
+            currentRiders: req.body.currentRiders,
+            from: req.body.from,
+            to: req.body.to,
+            departureTime: req.body.departureTime,
+        };
+        const ride = yield ride_manager_1.rideController.updateById(req.params.id, rideToUpdate);
+        if (ride) {
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(500);
+        }
     }
 }));

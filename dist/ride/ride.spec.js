@@ -40,7 +40,7 @@ describe('Ride', () => {
             currentRiders: 1,
             from: 'dolphin',
             to: 'tel aviv',
-            departure: 1716179465155,
+            departureTime: 1716179465155,
         });
         const savedRide = yield ride.save();
         chai_1.expect(savedRide).to.exist;
@@ -49,12 +49,13 @@ describe('Ride', () => {
     it('Should find ride.', () => __awaiter(this, void 0, void 0, function* () {
         const ride = yield ride_manager_1.rideController.getById(rideId);
         chai_1.expect(ride).to.exist;
-        chai_1.expect(ride).to.have.property('user', '0');
+        chai_1.expect(ride).to.have.property('user');
+        chai_1.expect(ride.user).to.have.property('_id', '0');
         chai_1.expect(ride).to.have.property('maxRiders', 4);
         chai_1.expect(ride).to.have.property('currentRiders', 1);
         chai_1.expect(ride).to.have.property('from', 'dolphin');
         chai_1.expect(ride).to.have.property('to', 'tel aviv');
-        chai_1.expect(ride).to.have.property('departure', 1716179465155);
+        chai_1.expect(ride).to.have.property('departureTime', 1716179465155);
     }));
     it('Should update ride.', () => __awaiter(this, void 0, void 0, function* () {
         const updatedRide = {
