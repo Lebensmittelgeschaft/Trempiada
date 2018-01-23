@@ -15,7 +15,7 @@ mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
   }
 });
 
-before('Clear users DB.', async () => {
+before('Clear users test DB.', async () => {
   try {
     await User.remove({});
   } catch (err) {
@@ -27,7 +27,7 @@ describe('User', () => {
   it('Should create a user.', async () => {
     const user = new User({
       _id: '0',
-      location: 'tel aviv',
+      address: 'tel aviv',
       hasCar: true,
     });
 
@@ -37,18 +37,18 @@ describe('User', () => {
   it('Should find user.', async () => {
     const user = await userController.getById('0');
     expect(user).to.exist;
-    expect(user).to.have.property('location', 'tel aviv');
+    expect(user).to.have.property('address', 'tel aviv');
     expect(user).to.have.property('hasCar', true);
   });
 
   it('Should update user.', async () => {
     const updatedUser: Partial<IUser> = {
-      location: 'yavne',
+      address: 'yavne',
     };
 
     const userResult = await userController.updateById('0', updatedUser);
     expect(userResult).to.exist;
-    expect(userResult).to.have.property('location', 'yavne');
+    expect(userResult).to.have.property('address', 'yavne');
   });
 
   it('Should delete user.', async () => {
