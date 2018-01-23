@@ -6,12 +6,13 @@ const users_route_1 = require("./user/users.route");
 const rides_route_1 = require("./ride/rides.route");
 const router = express.Router();
 /* GET home page. */
-router.get('/', (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../../public/html/index.html'));
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/html/index.html'));
 });
-function addRoute(app) {
+function getRoutes(app) {
+    app.use('/', router);
     app.use('/users', users_route_1.router);
     app.use('/rides', rides_route_1.router);
-    return router;
+    return app;
 }
-exports.addRoute = addRoute;
+exports.getRoutes = getRoutes;

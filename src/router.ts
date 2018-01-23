@@ -5,13 +5,14 @@ import { router as rides } from './ride/rides.route';
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  res.sendFile(path.join(__dirname, '../../public/html/index.html'));
+router.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/html/index.html'));
 });
 
-export function addRoute(app: express.Express): express.Router {
+export function getRoutes(app: express.Express): express.Express {
+  app.use('/', router);
   app.use('/users', users);
   app.use('/rides', rides);
 
-  return router;
+  return app;
 }
