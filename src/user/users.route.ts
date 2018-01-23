@@ -5,69 +5,90 @@ import { userController } from './user.manager';
 const router = express.Router();
 
 /* GET all users. */
-router.get('/', async (req, res, next) => {
-  try {
-    res.json(await userController.getAll());
-  } catch (err) {
-    console.log(err);
-    res.status(500).send();
+router.get('/', async (req, res) => {
+  const users = await userController.getAll();
+  if (users) {
+    res.json(users);
+  } else {
+    res.sendStatus(500);
   }
 });
 
 /* GET a user. */
-router.get('/:id', async (req, res, next) => {
-  try {
-    res.json(await userController.getById(req.query.id));
-  } catch (err) {
-    console.log(`Error finding user. ${err}`);
-    res.status(500).send();
+router.get('/:id', async (req, res) => {
+  if (!req.params.id || typeof req.params.id !== 'string') {
+    res.sendStatus(400);
+  } else {
+    const user = await userController.getById(req.params.id);
+    if (user) {
+      res.json(user);
+    } else {
+      res.sendStatus(404);
+    }
   }
 });
 
 /* POST a user. */
-router.post('/', async (req, res, next) => {
-  try {
-    const user = new User({
+router.post('/', async (req, res) => {
+
+  if (!req.body.id ||
+    !req.body.address ||
+    !req.body.hasCar ||
+    (typeof req.body.id !== 'string' ||
+      typeof req.body.address !== 'string' ||
+      typeof req.body.hasCar !== 'boolean')) {
+    res.sendStatus(400);
+  } else {
+    const userToSave = new User({
       _id: req.body.id,
-      location: req.body.location,
+      address: req.body.address,
       hasCar: req.body.hasCar,
     });
 
-    await user.save();
-    console.log(`User ${user._id} saved.`);
-    res.status(200).send();
-  } catch (err) {
-    console.log(`Error saving user to DB. ${err}`);
-    res.status(500).send();
+    const user = await userController.save(userToSave);
+    if (user) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(500);
+    }
   }
 });
 
 /* DELETE a user. */
-router.delete('/', async (req, res, next) => {
-  try {
-    await userController.deleteById(req.body.id);
-    console.log(`Deleted user ${req.body.id}.`);
-    res.status(200).send();
-  } catch (err) {
-    console.log(`Error deleting user ${req.body.id}. ${err}`);
-    res.status(500).send();
+router.delete('/:id', async (req, res) => {
+  if (!req.params.id || typeof req.params.id !== 'string') {
+    res.sendStatus(400);
+  } else {
+    const user = await userController.deleteById(req.params.id);
+    if (user) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
   }
 });
 
 /* UPDATE a user's data. */
-router.put('/', async (req, res, next) => {
-  try {
-    const user: Partial<IUser> = {
-      location: req.body.location,
+router.put('/:id', async (req, res) => {
+  if (!req.params.id ||
+    !req.body.address ||
+    !req.body.hasCar ||
+    typeof req.params.id !== 'string' ||
+    typeof req.body.address !== 'string' ||
+    typeof req.body.hasCar !== 'boolean') {
+    res.sendStatus(400);
+  } else {
+    const userToUpdate: Partial<IUser> = {
+      address: req.body.address,
       hasCar: req.body.hasCar,
     };
 
-    await userController.updateById(req.body.id, user);
-    console.log(`Updated user ${req.body.id}.`);
-    res.status(200).send();
-  } catch (err) {
-    console.log(err);
-    res.status(500).send();
+    const user = await userController.updateById(req.params.id, userToUpdate);
+    if (user) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(500);
+    }
   }
 });
 

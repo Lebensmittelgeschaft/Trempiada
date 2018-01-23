@@ -4,7 +4,7 @@ import { IUser } from './user.interface';
 const userSchema = new mongoose.Schema(
   {
     _id: String,
-    location: String,
+    address: String,
     hasCar: Boolean,
   },
   { _id: false });
