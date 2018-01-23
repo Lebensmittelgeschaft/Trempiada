@@ -7,36 +7,34 @@ export const userController = {
     return User.find({}).then((res) => {
       return res;
     }).catch((err) => {
+      console.error(err);
       return null;
     });
   },
   getById(id: string) {
-    return User.findById(id).then((res) => {
+    return User.findById(id)
+    .then((res) => {
       return res;
     }).catch((err) => {
+      console.error(err);
       return null;
     });
   },
   save(user: IUser) {
-    if (user && (typeof user._id !== 'string' ||
-      typeof user.location !== 'string' ||
-      typeof user.hasCar !== 'boolean')) {
-      console.log(`Could not save user.`);
-      return null;
-    }
-
-    return user.save().then((res) => {
+    return user.save()
+    .then((res) => {
       return res;
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
       return null;
     });
   },
   deleteById(id: string) {
-    return User.findByIdAndRemove(id).then((res) => {
+    return User.findByIdAndRemove(id)
+    .then((res) => {
       return res;
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
       return null;
     });
   },
@@ -46,7 +44,8 @@ export const userController = {
         return res;
       })
       .catch((err) => {
-        return err;
+        console.error(err);
+        return null;
       });
   },
 };

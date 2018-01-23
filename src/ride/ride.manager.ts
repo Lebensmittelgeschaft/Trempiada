@@ -5,7 +5,14 @@ import { config } from '../config';
 
 export const rideController = {
   getAll() {
-    return Ride.find({});
+    return Ride.find({})
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
   },
   async getAllBeforeDeparture() {
     const rides = await rideController.getAll();
@@ -13,12 +20,33 @@ export const rideController = {
     return rides ? rides.filter(r => now < r.departure) : null;
   },
   getById(id: mongoose.Types.ObjectId) {
-    return Ride.findById(id);
+    return Ride.findById(id)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
   },
   deleteById(id: mongoose.Types.ObjectId) {
-    return Ride.findByIdAndRemove(id);
+    return Ride.findByIdAndRemove(id)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
   },
   updateById(id: mongoose.Types.ObjectId, ride: Partial<IRide>) {
-    return Ride.findByIdAndUpdate(id, ride as Object, { new: true });
+    return Ride.findByIdAndUpdate(id, ride as Object, { new: true })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
   },
 };

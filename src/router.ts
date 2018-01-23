@@ -9,10 +9,8 @@ router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/html/index.html'));
 });
 
-export function getRoutes(app: express.Express): express.Express {
+export function getRoutes(app: express.Express) {
   app.use('/', router);
   app.use('/users', users);
   app.use('/rides', rides);
-
-  return app;
 }
