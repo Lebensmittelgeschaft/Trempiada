@@ -3,9 +3,19 @@ import { IUser } from './user.interface';
 
 const userSchema = new mongoose.Schema(
   {
-    _id: String,
-    address: String,
-    hasCar: Boolean,
+    _id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    hasCar: {
+      type: Boolean,
+      default: false,
+    },
   },
   { _id: false });
 
