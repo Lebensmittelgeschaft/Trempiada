@@ -1,9 +1,10 @@
 import { Document } from 'mongoose';
+import { IUser } from '../user/user.interface';
 
 export interface IRide extends Document {
-  user: string;
+  driver: IUser;
   maxRiders: number;
-  currentRiders: number;
+  riders: [IUser];
   from: string;
   to: string;
   departureTime: number;

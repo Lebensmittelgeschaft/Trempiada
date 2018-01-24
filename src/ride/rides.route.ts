@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 }); */
 
 /* GET a ride. */
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
@@ -46,25 +46,25 @@ router.get('/:id', async (req, res, next) => {
 });
 
 /* POST a ride. */
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.body.user ||
+  if (!req.body.driver ||
     !req.body.maxRiders ||
     !req.body.from ||
     !req.body.to ||
-    (req.body.currentRiders && typeof req.body.currentRiders !== 'number') ||
-    (req.body.departureTime && typeof req.body.departureTime !== 'number') ||
-    typeof req.body.user !== 'string' ||
+    !req.body.departureTime ||
+    (req.body.riders && typeof req.body.riders !== 'object') ||
+    typeof req.body.driver !== 'string' ||
     typeof req.body.maxRiders !== 'number' ||
     typeof req.body.from !== 'string' ||
     typeof req.body.to !== 'string') {
     res.sendStatus(400);
   } else {
     const rideToSave = new Ride({
-      user: req.body.user,
+      driver: req.body.driver,
       maxRiders: req.body.maxRiders,
-      currentRiders: req.body.currentRiders,
+      riders: req.body.riders,
       from: req.body.from,
       to: req.body.to,
       departureTime: req.body.departureTime,
@@ -80,7 +80,7 @@ router.post('/', async (req, res, next) => {
 });
 
 /* DELETE a ride. */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
@@ -97,13 +97,13 @@ router.put('/:id', async (req, res) => {
 
   // Checks if there's any invalid field.
   if (!req.params.id ||
-    !req.body.user ||
+    !req.body.driver ||
     !req.body.maxRiders ||
     !req.body.from ||
     !req.body.to ||
     !req.body.departureTime ||
-    (req.body.currentRiders && typeof req.body.currentRiders !== 'number') ||
-    typeof req.body.user !== 'string' ||
+    (req.body.riders && typeof req.body.riders !== 'object') ||
+    typeof req.body.driver !== 'string' ||
     typeof req.body.maxRiders !== 'number' ||
     typeof req.body.from !== 'string' ||
     typeof req.body.to !== 'string' ||
@@ -111,9 +111,9 @@ router.put('/:id', async (req, res) => {
     res.sendStatus(400);
   } else {
     const rideToUpdate: Partial<IRide> = {
-      user: req.body.user,
+      driver: req.body.driver,
       maxRiders: req.body.maxRiders,
-      currentRiders: req.body.currentRiders,
+      riders: req.body.riders,
       from: req.body.from,
       to: req.body.to,
       departureTime: req.body.departureTime,

@@ -27,26 +27,28 @@ describe('Ride', () => {
   let rideId: mongoose.Types.ObjectId;
   it('Should create a ride.', async () => {
     const ride = new Ride({
-      user: '0',
+      driver: '0',
       maxRiders: 4,
-      currentRiders: 1,
+      riders: ['0'],
       from: 'dolphin',
       to: 'tel aviv',
       departureTime: 1716179465155,
     });
 
-    const savedRide = await ride.save();
+    const savedRide = await rideController.save(ride);    
     expect(savedRide).to.exist;
-    rideId = savedRide._id;
+    if (savedRide) rideId = savedRide._id;
   });
 
   it('Should find ride.', async () => {
     const ride = await rideController.getById(rideId);
     expect(ride).to.exist;
-    expect(ride).to.have.property('user');
-    expect((ride as IRide).user).to.have.property('_id', '0');
+    expect(ride).to.have.property('driver');
+    expect((ride as IRide).driver).to.have.property('_id', '0');
     expect(ride).to.have.property('maxRiders', 4);
-    expect(ride).to.have.property('currentRiders', 1);
+    expect(ride).to.have.property('riders');
+    expect((ride as IRide).riders).to.not.be.equal([]);
+    expect((ride as IRide).riders[0]).to.have.property('_id', '0');
     expect(ride).to.have.property('from', 'dolphin');
     expect(ride).to.have.property('to', 'tel aviv');
     expect(ride).to.have.property('departureTime', 1716179465155);
@@ -62,7 +64,7 @@ describe('Ride', () => {
     expect(rideResult).to.have.property('to', 'yavne');
   });
 
-  it('Should delete ride.', async () => {
+  it.skip('Should delete ride.', async () => {
     expect(await rideController.deleteById(rideId)).to.exist;
   });
 });

@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
 
 const rideSchema = new mongoose.Schema({
-  user: {
+  driver: {
     type: String,
     ref: 'User',
     required: true,
@@ -11,10 +11,11 @@ const rideSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  currentRiders: {
-    type: Number,
-    default: 1,
-  },
+  riders: [{
+    type: String,
+    required: true,
+    ref: 'User',
+  }],
   from: {
     type: String,
     required: true,
@@ -25,7 +26,7 @@ const rideSchema = new mongoose.Schema({
   },
   departureTime: {
     type: Number,
-    default: (new Date()).getTime(),
+    required: true,
   },
 });
 

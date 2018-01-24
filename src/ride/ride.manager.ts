@@ -5,9 +5,14 @@ import { config } from '../config';
 
 export const rideController = {
   getAll() {
-    return Ride.find({}).populate('user')
-    .then((res) => {
-      return res;
+    return Ride.find({})
+    .then(async (res) => {
+      const resPopulated: IRide[] = [];
+      for (let i = 0; i < res.length; i += 1) {
+        resPopulated.push(await res[i].populate('driver').populate('riders').execPopulate());
+      }
+
+      return resPopulated;
     })
     .catch((err) => {
       console.error(err);
@@ -20,10 +25,9 @@ export const rideController = {
     return rides ? rides.filter(r => now < r.departureTime) : null;
   },
   getById(id: mongoose.Types.ObjectId) {
-    return Ride.findById(id).populate('user')
-    .then((res) => {
-      console.log(res);
-      return res;
+    return Ride.findById(id)   
+    .then(async (res) => {
+      return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
     })
     .catch((err) => {
       console.error(err);
@@ -32,8 +36,8 @@ export const rideController = {
   },
   save(ride: IRide) {
     return ride.save()
-    .then((res) => {
-      return res;
+    .then(async (res) => {
+      return await res.populate('driver').populate('riders');
     })
     .catch((err) => {
       console.error(err);
@@ -42,8 +46,8 @@ export const rideController = {
   },
   deleteById(id: mongoose.Types.ObjectId) {
     return Ride.findByIdAndRemove(id)
-    .then((res) => {
-      return res;
+    .then(async (res) => {
+      return await res && (res as IRide).populate('driver').populate('riders');
     })
     .catch((err) => {
       console.error(err);
@@ -52,8 +56,8 @@ export const rideController = {
   },
   updateById(id: mongoose.Types.ObjectId, ride: Partial<IRide>) {
     return Ride.findByIdAndUpdate(id, ride as Object, { new: true })
-    .then((res) => {
-      return res;
+    .then(async (res) => {
+      return await res && (res as IRide).populate('driver').populate('riders');
     })
     .catch((err) => {
       console.error(err);

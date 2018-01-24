@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
-  },
-  { _id: false });
+  });
 
 export const user = mongoose.model<IUser>('User', userSchema);
