@@ -1,5 +1,6 @@
 import 'mocha';
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import { rideController } from './ride.manager';
 import { ride as Ride } from './ride.model';
 import { IRide } from './ride.interface';
@@ -18,6 +19,8 @@ mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
   }
 });
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 const driverid = '1';
 const riders: string[] = [];
 before('Clear rides DB.', async () => {
@@ -66,7 +69,7 @@ describe('Ride', () => {
     });
 
     let savedRide: IRide;
-    expect(savedRide = await rideController.save(ride)).to.not.throw();
+    expect(savedRide = await rideController.save(ride)).to.be.eventually.fulfilled;
     expect(savedRide).to.exist;
     if (savedRide) {
       rideId = savedRide._id;
@@ -75,7 +78,7 @@ describe('Ride', () => {
 
   it('Should find ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideController.getById(rideId) as IRide).to.not.throw();
+    expect(ride = await rideController.getById(rideId) as IRide).to.be.eventually.fulfilled;
     expect(ride).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
@@ -96,7 +99,7 @@ describe('Ride', () => {
 
     let rideResult: IRide;
     expect(rideResult = await rideController.updateById(rideId, updatedRide) as IRide)
-    .to.not.throw();
+    .to.be.eventually.fulfilled;
     expect(rideResult).to.exist;
     expect(rideResult).to.have.property('to', 'yavne');
     expect(rideResult).to.have.property('driver');
@@ -112,7 +115,7 @@ describe('Ride', () => {
 
   it.skip('Should delete ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideController.deleteById(rideId) as IRide).to.not.throw();
+    expect(ride = await rideController.deleteById(rideId) as IRide).to.be.eventually.fulfilled;
     expect(ride).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
