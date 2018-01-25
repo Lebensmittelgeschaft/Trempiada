@@ -9,7 +9,7 @@
     "tscwatch": "tsc -w",
     "startdb": "mongod --dbpath C:/Users/Other/Desktop/TrempDB",
     "start": "set NODE_ENV=dev&& npm run build && npm run nodemon",
-    "test": "set NODE_ENV=test&&mocha dist/**/*.spec.js"
+    "test": "set NODE_ENV=test&& npm run build && mocha dist/**/*.spec.js"
   },
   "keywords": [],
   "bin": {

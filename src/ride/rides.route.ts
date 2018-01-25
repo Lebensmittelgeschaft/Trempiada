@@ -7,16 +7,16 @@ const router = express.Router();
 
 /* GET all rides. */
 router.get('/', async (req, res) => {
-  let rides: IRide[] | null = null;
-  if (req.body.active && req.body.active === true) {
-    rides = await rideController.getAllBeforeDeparture();
-  } else {
-    rides = await rideController.getAll();
-  }
+  let rides: IRide[] = [];
+  try {
+    if (req.body.active && req.body.active === true) {
+      rides = await rideController.getAllBeforeDeparture();
+    } else {
+      rides = await rideController.getAll();
+    }
 
-  if (rides) {
     res.json(rides);
-  } else {
+  } catch (err) {
     res.sendStatus(500);
   }
 });
@@ -36,11 +36,15 @@ router.get('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
-    const ride = await rideController.getById(req.params.id);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(404); // 500?
+    try {
+      const ride = await rideController.getById(req.params.id);
+      if (ride) {
+        res.json(ride);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500);
     }
   }
 });
@@ -70,10 +74,10 @@ router.post('/', async (req, res) => {
       departureTime: req.body.departureTime,
     });
 
-    const ride = await rideController.save(rideToSave);
-    if (ride) {
+    try {
+      const ride = await rideController.save(rideToSave);
       res.sendStatus(200);
-    } else {
+    } catch (err) {
       res.sendStatus(500);
     }
   }
@@ -84,11 +88,15 @@ router.delete('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
-    const ride = await rideController.deleteById(req.params.id);
-    if (ride) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(404);
+    try {
+      const ride = await rideController.deleteById(req.params.id);
+      if (ride) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500);
     }
   }
 });
@@ -119,10 +127,14 @@ router.put('/:id', async (req, res) => {
       departureTime: req.body.departureTime,
     };
 
-    const ride = await rideController.updateById(req.params.id, rideToUpdate);
-    if (ride) {
-      res.sendStatus(200);
-    } else {
+    try {
+      const ride = await rideController.updateById(req.params.id, rideToUpdate);
+      if (ride) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
       res.sendStatus(500);
     }
   }

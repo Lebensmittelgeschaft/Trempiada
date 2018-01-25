@@ -16,13 +16,13 @@ export const rideController = {
     })
     .catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   async getAllBeforeDeparture() {
     const rides = await rideController.getAll();
     const now = new Date().getTime();
-    return rides ? rides.filter(r => now < r.departureTime) : null;
+    return rides.filter(r => now < r.departureTime);
   },
   getById(id: mongoose.Types.ObjectId) {
     return Ride.findById(id)   
@@ -31,37 +31,37 @@ export const rideController = {
     })
     .catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   save(ride: IRide) {
     return ride.save()
     .then(async (res) => {
-      return await res.populate('driver').populate('riders');
+      return await res.populate('driver').populate('riders').execPopulate();
     })
     .catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   deleteById(id: mongoose.Types.ObjectId) {
     return Ride.findByIdAndRemove(id)
     .then(async (res) => {
-      return await res && (res as IRide).populate('driver').populate('riders');
+      return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
     })
     .catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   updateById(id: mongoose.Types.ObjectId, ride: Partial<IRide>) {
     return Ride.findByIdAndUpdate(id, ride as Object, { new: true })
     .then(async (res) => {
-      return await res && (res as IRide).populate('driver').populate('riders');
+      return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
     })
     .catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
 };
