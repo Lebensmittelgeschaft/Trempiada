@@ -69,7 +69,7 @@ describe('Ride', () => {
     });
 
     let savedRide: IRide;
-    expect(savedRide = await rideController.save(ride)).to.be.eventually.fulfilled;
+    expect(savedRide = await rideController.save(ride)).to.exist;
     expect(savedRide).to.exist;
     if (savedRide) {
       rideId = savedRide._id;
@@ -78,8 +78,7 @@ describe('Ride', () => {
 
   it('Should find ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideController.getById(rideId) as IRide).to.be.eventually.fulfilled;
-    expect(ride).to.exist;
+    expect(ride = await rideController.getById(rideId) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
     expect((ride as IRide).driver).to.have.property('_id', driverid);
@@ -98,9 +97,7 @@ describe('Ride', () => {
     };
 
     let rideResult: IRide;
-    expect(rideResult = await rideController.updateById(rideId, updatedRide) as IRide)
-    .to.be.eventually.fulfilled;
-    expect(rideResult).to.exist;
+    expect(rideResult = await rideController.updateById(rideId, updatedRide) as IRide).to.exist;
     expect(rideResult).to.have.property('to', 'yavne');
     expect(rideResult).to.have.property('driver');
     expect(rideResult.driver).to.exist;
@@ -115,8 +112,7 @@ describe('Ride', () => {
 
   it.skip('Should delete ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideController.deleteById(rideId) as IRide).to.be.eventually.fulfilled;
-    expect(ride).to.exist;
+    expect(ride = await rideController.deleteById(rideId) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
     expect((ride as IRide).driver).to.have.property('_id', driverid);
