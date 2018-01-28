@@ -57,7 +57,7 @@ before('Clear rides DB.', async () => {
 });
 
 describe('Ride', () => {
-  let rideId: mongoose.Types.ObjectId;
+  let rideId: mongoose.Schema.Types.ObjectId;
   it('Should create a ride.', async () => {
     const ride = new Ride({
       riders,
@@ -81,11 +81,11 @@ describe('Ride', () => {
     expect(ride = await rideController.getById(rideId) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
-    expect((ride as IRide).driver).to.have.property('_id', driverid);
+    expect(ride.driver).to.have.property('_id', driverid);
     expect(ride).to.have.property('maxRiders', 4);
     expect(ride).to.have.property('riders');
-    expect((ride as IRide).riders).to.have.length(riders.length);
-    expect((ride as IRide).riders[0]).to.have.property('_id', riders[0]);
+    expect(ride.riders).to.have.length(riders.length);
+    expect(ride.riders[0]).to.have.property('_id', riders[0]);
     expect(ride).to.have.property('from', 'dolphin');
     expect(ride).to.have.property('to', 'tel aviv');
     expect(ride).to.have.property('departureTime', 1716179465155);
@@ -101,13 +101,20 @@ describe('Ride', () => {
     expect(rideResult).to.have.property('to', 'yavne');
     expect(rideResult).to.have.property('driver');
     expect(rideResult.driver).to.exist;
-    expect((rideResult as IRide).driver).to.have.property('_id', driverid);
+    expect(rideResult.driver).to.have.property('_id', driverid);
     expect(rideResult).to.have.property('maxRiders', 4);
     expect(rideResult).to.have.property('riders');
-    expect((rideResult as IRide).riders).to.have.length(riders.length);
-    expect((rideResult as IRide).riders[0]).to.have.property('_id', riders[0]);
+    expect(rideResult.riders).to.have.length(riders.length);
+    expect(rideResult.riders[0]).to.have.property('_id', riders[0]);
     expect(rideResult).to.have.property('from', 'dolphin');
     expect(rideResult).to.have.property('departureTime', 1716179465155);
+  });
+
+  it('Should add rider to ride.', async () => {
+    const ride = await rideController.addRider(rideId, driverid) as IRide;
+    expect(ride).to.exist;
+    expect(ride.riders).to.have.length(riders.length + 1);
+    expect(ride.riders[ride.riders.length - 1]).to.have.property('_id', driverid);
   });
 
   it.skip('Should delete ride.', async () => {
@@ -115,11 +122,11 @@ describe('Ride', () => {
     expect(ride = await rideController.deleteById(rideId) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
-    expect((ride as IRide).driver).to.have.property('_id', driverid);
+    expect(ride.driver).to.have.property('_id', driverid);
     expect(ride).to.have.property('maxRiders', 4);
     expect(ride).to.have.property('riders');
-    expect((ride as IRide).riders).to.have.length(riders.length);
-    expect((ride as IRide).riders[0]).to.have.property('_id', riders[0]);
+    expect(ride.riders).to.have.length(riders.length);
+    expect(ride.riders[0]).to.have.property('_id', riders[0]);
     expect(ride).to.have.property('from', 'dolphin');
     expect(ride).to.have.property('to', 'yavne');
     expect(ride).to.have.property('departureTime', 1716179465155);

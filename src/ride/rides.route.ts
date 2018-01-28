@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { ride as Ride } from './ride.model';
+import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
 import { rideController } from './ride.manager';
 import { config } from '../config';
@@ -129,6 +130,26 @@ router.put('/:id', async (req, res) => {
 
     try {
       const ride = await rideController.updateById(req.params.id, rideToUpdate);
+      if (ride) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500);
+    }
+  }
+});
+
+router.put('/addRider', async (req, res) => {
+
+  // Checks if there's any invalid field.
+  if (!req.query.ride || typeof req.query.ride !== 'string' ||
+    !req.query.user || typeof req.query.user !== 'string') {
+    res.sendStatus(400);
+  } else {
+    try {
+      const ride = await rideController.addRider(req.query.ride as mongoose.Schema.Types.ObjectId, req.query.user);
       if (ride) {
         res.sendStatus(200);
       } else {

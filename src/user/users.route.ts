@@ -6,10 +6,10 @@ const router = express.Router();
 
 /* GET all users. */
 router.get('/', async (req, res) => {
-  const users = await userController.getAll();
-  if (users) {
+  try {
+    const users = await userController.getAll();
     res.json(users);
-  } else {
+  } catch (err) {
     res.sendStatus(500);
   }
 });
@@ -19,11 +19,15 @@ router.get('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
-    const user = await userController.getById(req.params.id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.sendStatus(404); // 500?
+    try {
+      const user = await userController.getById(req.params.id);
+      if (user) {
+        res.json(user);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500);
     }
   }
 });
@@ -46,10 +50,10 @@ router.post('/', async (req, res) => {
       hasCar: req.body.hasCar,
     });
 
-    const user = await userController.save(userToSave);
-    if (user) {
+    try {
+      const user = await userController.save(userToSave);
       res.sendStatus(200);
-    } else {
+    } catch (err) {
       res.sendStatus(500);
     }
   }
@@ -60,11 +64,15 @@ router.delete('/:id', async (req, res) => {
   if (!req.params.id || typeof req.params.id !== 'string') {
     res.sendStatus(400);
   } else {
-    const user = await userController.deleteById(req.params.id);
-    if (user) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(404);
+    try {
+      const user = await userController.deleteById(req.params.id);
+      if (user) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500);
     }
   }
 });
@@ -86,10 +94,14 @@ router.put('/:id', async (req, res) => {
       hasCar: req.body.hasCar,
     };
 
-    const user = await userController.updateById(req.params.id, userToUpdate);
-    if (user) {
-      res.sendStatus(200);
-    } else {
+    try {
+      const user = await userController.updateById(req.params.id, userToUpdate);
+      if (user) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
       res.sendStatus(500);
     }
   }

@@ -4,11 +4,12 @@ import { IUser } from './user.interface';
 
 export const userController = {
   getAll() {
-    return User.find({}).then((res) => {
+    return User.find({})
+    .then((res) => {
       return res;
     }).catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   getById(id: string) {
@@ -17,7 +18,7 @@ export const userController = {
       return res;
     }).catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   save(user: IUser) {
@@ -26,7 +27,7 @@ export const userController = {
       return res;
     }).catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   deleteById(id: string) {
@@ -35,7 +36,7 @@ export const userController = {
       return res;
     }).catch((err) => {
       console.error(err);
-      return null;
+      throw err;
     });
   },
   updateById(id: string, user: Partial<IUser>) {
@@ -45,7 +46,7 @@ export const userController = {
       })
       .catch((err) => {
         console.error(err);
-        return null;
+        throw err;
       });
   },
 };
