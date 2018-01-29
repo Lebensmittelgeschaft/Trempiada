@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   let rides: IRide[] = [];
   try {
-    if (req.body.active && req.body.active === true) {
+    if (req.query.active && req.query.active === 'true') {
       rides = await rideController.getAllBeforeDeparture();
     } else {
       rides = await rideController.getAll();
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
 
 /* GET a ride. */
 router.get('/:id', async (req, res) => {
-  if (!req.params.id || typeof req.params.id !== 'string') {
+  if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -58,24 +58,19 @@ router.post('/', async (req, res) => {
     !req.body.maxRiders ||
     !req.body.from ||
     !req.body.to ||
-    !req.body.departureTime ||
-    (req.body.riders && typeof req.body.riders !== 'object') ||
-    typeof req.body.driver !== 'string' ||
-    typeof req.body.maxRiders !== 'number' ||
-    typeof req.body.from !== 'string' ||
-    typeof req.body.to !== 'string') {
+    !req.body.departureTime) {
     res.sendStatus(400);
   } else {
-    const rideToSave = new Ride({
-      driver: req.body.driver,
-      maxRiders: req.body.maxRiders,
-      riders: req.body.riders,
-      from: req.body.from,
-      to: req.body.to,
-      departureTime: req.body.departureTime,
-    });
-
     try {
+      const rideToSave = new Ride({
+        driver: req.body.driver,
+        maxRiders: req.body.maxRiders,
+        riders: JSON.parse(req.body.riders),
+        from: req.body.from,
+        to: req.body.to,
+        departureTime: req.body.departureTime,
+      });
+
       const ride = await rideController.save(rideToSave);
       res.sendStatus(200);
     } catch (err) {
@@ -86,7 +81,7 @@ router.post('/', async (req, res) => {
 
 /* DELETE a ride. */
 router.delete('/:id', async (req, res) => {
-  if (!req.params.id || typeof req.params.id !== 'string') {
+  if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -110,19 +105,13 @@ router.put('/:id', async (req, res) => {
     !req.body.maxRiders ||
     !req.body.from ||
     !req.body.to ||
-    !req.body.departureTime ||
-    (req.body.riders && typeof req.body.riders !== 'object') ||
-    typeof req.body.driver !== 'string' ||
-    typeof req.body.maxRiders !== 'number' ||
-    typeof req.body.from !== 'string' ||
-    typeof req.body.to !== 'string' ||
-    typeof req.body.departureTime !== 'number') {
+    !req.body.departureTime) {
     res.sendStatus(400);
   } else {
     const rideToUpdate: Partial<IRide> = {
       driver: req.body.driver,
       maxRiders: req.body.maxRiders,
-      riders: req.body.riders,
+      riders: JSON.parse(req.body.riders),
       from: req.body.from,
       to: req.body.to,
       departureTime: req.body.departureTime,
@@ -141,15 +130,15 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.put('/addRider', async (req, res) => {
+router.put('/:ride/rider/:user', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.query.ride || typeof req.query.ride !== 'string' ||
-    !req.query.user || typeof req.query.user !== 'string') {
+  if (!req.params.ride || !req.params.user) {
     res.sendStatus(400);
   } else {
     try {
-      const ride = await rideController.addRider(req.query.ride as mongoose.Schema.Types.ObjectId, req.query.user);
+      const ride = await rideController
+      .addRider(req.params.ride, req.params.user);
       if (ride) {
         res.sendStatus(200);
       } else {

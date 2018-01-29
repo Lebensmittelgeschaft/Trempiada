@@ -1,6 +1,5 @@
 import 'mocha';
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
 import { rideController } from './ride.manager';
 import { ride as Ride } from './ride.model';
 import { IRide } from './ride.interface';
@@ -19,7 +18,6 @@ mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
   }
 });
 
-chai.use(chaiAsPromised);
 const expect = chai.expect;
 const driverid = '1';
 const riders: string[] = [];

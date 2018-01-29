@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 /* GET a user. */
 router.get('/:id', async (req, res) => {
-  if (!req.params.id || typeof req.params.id !== 'string') {
+  if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -38,10 +38,7 @@ router.post('/', async (req, res) => {
   // Checks if there's any invalid field.
   if (!req.body.id ||
     !req.body.address ||
-    !req.body.hasCar ||
-    typeof req.body.id !== 'string' ||
-    typeof req.body.address !== 'string' ||
-    typeof req.body.hasCar !== 'boolean') {
+    !req.body.hasCar) {
     res.sendStatus(400);
   } else {
     const userToSave = new User({
@@ -61,7 +58,7 @@ router.post('/', async (req, res) => {
 
 /* DELETE a user. */
 router.delete('/:id', async (req, res) => {
-  if (!req.params.id || typeof req.params.id !== 'string') {
+  if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -83,10 +80,7 @@ router.put('/:id', async (req, res) => {
   // Checks if there's any invalid field.
   if (!req.params.id ||
     !req.body.address ||
-    !req.body.hasCar ||
-    typeof req.params.id !== 'string' ||
-    typeof req.body.address !== 'string' ||
-    typeof req.body.hasCar !== 'boolean') {
+    !req.body.hasCar) {
     res.sendStatus(400);
   } else {
     const userToUpdate: Partial<IUser> = {

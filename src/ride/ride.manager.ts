@@ -67,19 +67,21 @@ export const rideController = {
       });
   },
   async addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
+    const user = await userController.getById(userid);
     let ride = await rideController.getById(rideid);
-    let user = await userController.getById(userid);
     if (ride && user) {
-      let isRiderFound = false;
-      for (let i = 0; i < ride.riders.length && !isRiderFound; i++) {
-        if (ride.riders[i]._id === userid) {
-          isRiderFound = true;
-        }
-      }
+      const rideToUpdate = {
+        driver: ride.driver._id as any,
+        maxRiders: ride.maxRiders,
+        riders: ride.riders.map(r => r._id) as any,
+        from: ride.from,
+        to: ride.to,
+        departureTime: ride.departureTime,
+      };
 
-      if (!isRiderFound) {
-        ride.riders.push(user);
-        ride = await rideController.updateById(rideid, ride);
+      if (rideToUpdate.riders.indexOf(userid) === -1) {
+        rideToUpdate.riders.push(user._id);
+        ride = await rideController.updateById(rideid, rideToUpdate as Partial<IRide>);
       }
     }
 
