@@ -6,13 +6,14 @@
     "configurations": [
 
         {
-            "type": "node",
-            "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\dist\\app.js",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+                "${workspaceFolder}/dist/**/*.js"
+            ],
+            "program": "${workspaceRoot}/src/app.ts",
+            "request": "launch",
+            "type": "node",
+            "sourceMaps": true
         },
         
         {

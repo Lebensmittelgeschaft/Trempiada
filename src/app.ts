@@ -29,8 +29,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 router(app);
 
-app.set('port', config.port);
-
-app.listen(() => {
-  console.log(`Server listening on port ${config.port}`);
+const server = app.listen(parseInt(<string>config.port, undefined), () => {
+  console.log(`Server listening on port ${server.address().port}`);
 });
