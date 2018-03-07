@@ -3,15 +3,36 @@ import { IUser } from './user.interface';
 
 const userSchema = new mongoose.Schema(
   {
-    _id: {
+    username: {
       type: String,
       required: true,
     },
-    address: {
+    job: {
       type: String,
       required: true,
     },
-    hasCar: {
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
+      type: String,
+      required: true,
+    },
+    rides: [{
+      ride: mongoose.Schema.Types.ObjectId,
+      joinDate: Date,
+      required: true,
+    }],
+    email: {
+      type: String,
+      required: true,
+    },
+    notifications: [{
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    }],
+    active: {
       type: Boolean,
       required: true,
     },

@@ -12,14 +12,17 @@ export const userController = {
       throw err;
     });
   },
-  getById(id: string) {
-    return User.findById(id)
+  getByProp(prop: string, value: any) {
+    return User.findOne({ prop: value })
     .then((res) => {
       return res;
     }).catch((err) => {
-      console.error(err);
+      console.log(err);
       throw err;
     });
+  },
+  getByUsername(username: string) {
+    return this.getByProp('username', username);
   },
   save(user: IUser) {
     return user.save()
@@ -30,8 +33,8 @@ export const userController = {
       throw err;
     });
   },
-  deleteById(id: string) {
-    return User.findByIdAndRemove(id)
+  deleteByUsername(username: string) {
+    return User.findByIdAndRemove(username)
     .then((res) => {
       return res;
     }).catch((err) => {
@@ -39,8 +42,8 @@ export const userController = {
       throw err;
     });
   },
-  updateById(id: string, user: Partial<IUser>) {
-    return User.findByIdAndUpdate(id, user as Object, { new: true })
+  updateByUsername(username: string, user: Partial<IUser>) {
+    return User.findByIdAndUpdate(username, user as Object, { new: true })
       .then((res) => {
         return res;
       })
