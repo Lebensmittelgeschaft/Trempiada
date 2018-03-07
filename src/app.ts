@@ -31,8 +31,6 @@ router(app);
 
 app.set('port', config.port);
 
-const server = http.createServer(app);
-server.listen(config.port, () => {
-  console.log(`Server listening at address: ${server.address().address}
-   on port ${server.address().port}`);
+app.listen(() => {
+  console.log(`Server listening on port ${config.port}`);
 });
