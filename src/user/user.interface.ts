@@ -5,11 +5,11 @@ export interface IUser extends mongoose.Document {
   job: string;
   firstname: string;
   lastname: string;
-  ride: [{
+  ride: {
     ride: mongoose.Schema.Types.ObjectId,
     joinDate: Date,
-  }];
+  }[];
   email: string;
-  notifications: [mongoose.Schema.Types.ObjectId];
+  notifications: mongoose.Schema.Types.ObjectId[];
   active: boolean;
 }
