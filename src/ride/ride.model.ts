@@ -24,10 +24,18 @@ const rideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  departureTime: {
-    type: Number,
+  departureDate: {
+    type: Date,
     required: true,
   },
+  creationDate: {
+    type: Date,
+    required: true,
+  },
+  active: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 export const ride = mongoose.model<IRide>('Ride', rideSchema);

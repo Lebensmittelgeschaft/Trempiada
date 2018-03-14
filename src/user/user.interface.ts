@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { IRide } from '../ride/ride.interface';
 
 export interface IUser extends mongoose.Document {
   username: string;
@@ -6,7 +7,7 @@ export interface IUser extends mongoose.Document {
   firstname: string;
   lastname: string;
   ride: {
-    ride: mongoose.Schema.Types.ObjectId,
+    ride: mongoose.Schema.Types.ObjectId | IRide,
     joinDate: Date,
   }[];
   email: string;

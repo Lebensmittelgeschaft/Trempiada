@@ -1,11 +1,13 @@
-import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { IUser } from '../user/user.interface';
 
-export interface IRide extends Document {
-  driver: IUser;
+export interface IRide extends mongoose.Document {
+  driver: mongoose.Schema.Types.ObjectId | IUser;
   maxRiders: number;
-  riders: IUser[];
+  riders: mongoose.Schema.Types.ObjectId[] | IUser[];
   from: string;
   to: string;
-  departureTime: number;
+  departureDate: Date;
+  creationDate: Date;
+  active: boolean;
 }
