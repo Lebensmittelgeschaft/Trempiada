@@ -35,7 +35,7 @@ const rideSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     required: true,
-  }
+  },
 });
 
 export const ride = mongoose.model<IRide>('Ride', rideSchema);

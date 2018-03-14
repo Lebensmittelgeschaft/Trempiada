@@ -46,16 +46,16 @@ before('Clear rides DB.', async () => {
         notifications: [],
         active: true,
       }),
-      new User({
-        username: '3',
-        job: 'Bobnik',
-        firstname: 'asd',
-        lastname: 'dsa',
-        ride: [],
-        email: 'Bob@bob.bob',
-        notifications: [],
-        active: true,
-      })];
+        new User({
+          username: '3',
+          job: 'Bobnik',
+          firstname: 'asd',
+          lastname: 'dsa',
+          ride: [],
+          email: 'Bob@bob.bob',
+          notifications: [],
+          active: true,
+        })];
 
       expect(await userController.save(driver)).to.exist;
       await Promise.all(ridersToTest.map(async (u) => {

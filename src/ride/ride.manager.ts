@@ -47,7 +47,7 @@ export class rideController {
   }
 
   static getOneByConditions(conditions: Object) {
-    return Ride.find(conditions).populate({
+    return Ride.findOne(conditions).populate({
       path: 'driver',
       model: 'User',
       populate: {
@@ -110,9 +110,62 @@ export class rideController {
   }
 
   static addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
-    return User.findOneAndUpdate({ _id: rideid }, { $push: { riders: userid } })
-    .then((res) => {
-      return res;
+    return Promise.all([Ride.findByIdAndUpdate(rideid,
+                                               { $push: { riders: userid } }, { new: true })
+    .populate({
+      path: 'riders',
+      model: 'User',
+    })
+    .then((ride) => {
+      return ride;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    }),
+      User.findOneAndUpdate({ username: userid },
+                            { $push: { rides: rideid } }, { new: true })
+      .then((user) => {
+        return user;
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
+    ])
+    .then(([ride, user]) => {
+      return ride;
+    }).catch((err) => {
+      console.error(err);
+      throw err;
+    });
+  }
+
+  static removeRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
+    return Promise.all([
+      Ride.findByIdAndUpdate(rideid, { $pull: { riders: userid } }, { new: true })
+      .populate({
+        path: 'riders',
+        model: 'User',
+      }).then((ride) => {
+        return ride;
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
+      User.findOneAndUpdate({ username: userid },
+                            { $push: { rides: rideid } }, { new: true })
+      .then((user) => {
+        return user;
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
+    ])
+    .then(([ride, user]) => {
+      return ride;
     })
     .catch((err) => {
       console.error(err);

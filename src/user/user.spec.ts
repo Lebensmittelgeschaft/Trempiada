@@ -35,23 +35,20 @@ describe('User', () => {
   });
 
   it('Should find user.', async () => {
-    const user = await userController.getById('0');
+    const user = await userController.getByUsername('0');
     expect(user).to.exist;
-    expect(user).to.have.property('address', 'tel aviv');
-    expect(user).to.have.property('hasCar', true);
   });
 
   it('Should update user.', async () => {
     const updatedUser: Partial<IUser> = {
-      address: 'yavne',
+      firstname: 'omri',
     };
 
-    const userResult = await userController.updateById('0', updatedUser);
+    const userResult = await userController.updateByUsername('0', updatedUser);
     expect(userResult).to.exist;
-    expect(userResult).to.have.property('address', 'yavne');
   });
 
   it.skip('Should delete user.', async () => {
-    expect(await userController.deleteById('0')).to.exist;
+    expect(await userController.deleteByUsername('0')).to.exist;
   });
 });
