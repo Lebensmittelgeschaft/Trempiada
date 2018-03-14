@@ -4,87 +4,142 @@ import { IUser } from '../user/user.interface';
 import { ride as Ride } from './ride.model';
 import { config } from '../config';
 import { userController } from '../user/user.manager';
+import { user as User } from '../user/user.model';
 
-export const rideController = {
-  getAll() {
-    return Ride.find({})
-      .then(async (res) => {
-        const resPopulated: IRide[] = [];
-        for (let i = 0; i < res.length; i += 1) {
-          resPopulated.push(await res[i].populate('driver').populate('riders').execPopulate());
-        }
+export class rideController {
+  static getAll(conditions: Object) {
+    return Ride.find(conditions)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+  }
 
-        return resPopulated;
+  static getAllBeforeDeparture() {
+    return Ride.find({
+      departureDate: { $gte: new Date() },
+      active: true,
+    }).populate({
+      path: 'driver',
+      model: 'User',
+      populate: {
+        path: 'rides.ride',
+        model: 'Ride',
+      },
+    }).populate({
+      path: 'riders',
+      model: 'User',
+      populate: {
+        path: 'rides.ride',
+        model: 'Ride',
+      },
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+  }
+
+  static getAllActive() {
+    return Ride.find({
+      active: true,
+    }).populate({
+      path: 'driver',
+      model: 'User',
+      populate: {
+        path: 'rides.ride',
+        model: 'Ride',
+      },
+    }).populate({
+      path: 'riders',
+      model: 'User',
+      populate: {
+        path: 'rides.ride',
+        model: 'Ride',
+      },
+    })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+  }
+
+  static getById(id: mongoose.Schema.Types.ObjectId) {
+    return Ride.findById(id).populate({
+      path: 'driver',
+      model: 'User',
+      populate: {
+        path: 'rides',
+        model: 'Ride',
+      },
+    })
+    .populate({
+      path: 'riders',
+      model: 'User',
+      populate: {
+        path: 'rides.ride',
+        model: 'Ride',
+      },
+    })
+      .then((res) => {
+        return res;
       })
       .catch((err) => {
         console.error(err);
         throw err;
       });
-  },
-  async getAllBeforeDeparture() {
-    const rides = await rideController.getAll();
-    const now = new Date().getTime();
-    return rides.filter(r => now < r.departureTime);
-  },
-  getById(id: mongoose.Schema.Types.ObjectId) {
-    return Ride.findById(id)
-      .then(async (res) => {
-        return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
-      })
-      .catch((err) => {
-        console.error(err);
-        throw err;
-      });
-  },
-  save(ride: IRide) {
+  }
+
+  static save(ride: IRide) {
     return ride.save()
-      .then(async (res) => {
-        return await res.populate('driver').populate('riders').execPopulate();
+      .then((res) => {
+        return res;
       })
       .catch((err) => {
         console.error(err);
         throw err;
       });
-  },
-  deleteById(id: mongoose.Schema.Types.ObjectId) {
+  }
+
+  static deleteById(id: mongoose.Schema.Types.ObjectId) {
     return Ride.findByIdAndRemove(id)
-      .then(async (res) => {
-        return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
+      .then((res) => {
+        return res;
       })
       .catch((err) => {
         console.error(err);
         throw err;
       });
-  },
-  updateById(id: mongoose.Schema.Types.ObjectId, ride: Partial<IRide>) {
-    return Ride.findByIdAndUpdate(id, ride as Object, { new: true })
-      .then(async (res) => {
-        return await res && (res as IRide).populate('driver').populate('riders').execPopulate();
+  }
+
+  static updateById(id: mongoose.Schema.Types.ObjectId, ride: Partial<IRide>) {
+    return Ride.findByIdAndUpdate(id, <Object>ride, { new: true })
+      .then((res) => {
+        return res;
       })
       .catch((err) => {
         console.error(err);
         throw err;
       });
-  },
-  async addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
-    const user = await userController.getById(userid);
-    let ride = await rideController.getById(rideid);
-    if (ride && user) {
-      const rideToUpdate = {
-        driver: ride.driver._id as any,
-        maxRiders: ride.maxRiders,
-        riders: ride.riders.map(r => r._id) as any,
-        from: ride.from,
-        to: ride.to,
-        departureTime: ride.departureTime,
-      };
+  }
 
-      if (rideToUpdate.riders.indexOf(userid) === -1) {
-        rideToUpdate.riders.push(user._id);
-        ride = await rideController.updateById(rideid, rideToUpdate as Partial<IRide>);
-      }
-    }
-
-    return ride;
-  },
-};
+  static addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
+    return User.findOneAndUpdate({ _id: rideid }, { $push: { riders: userid } })
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+  }
+}

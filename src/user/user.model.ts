@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     rides: [{
-      ride: mongoose.Schema.Types.ObjectId,
+      ride: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ride',
+        required: true,
+      },
       joinDate: Date,
       required: true,
     }],
@@ -30,6 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     notifications: [{
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'Notification',
       required: true,
     }],
     active: {

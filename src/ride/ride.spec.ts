@@ -26,27 +26,42 @@ before('Clear rides DB.', async () => {
     await Ride.remove({});
     it('Should create test users.', async () => {
       const driver = new User({
-        _id: driverid,
-        address: 'tel aviv',
-        hasCar: true,
+        username: driverid,
+        job: 'Jobnik',
+        firstname: 'Bob',
+        lastname: 'boB',
+        ride: [],
+        email: 'Bob@bob.bob',
+        notifications: [],
+        active: true,
       });
 
       const ridersToTest = [new User({
-        _id: '2',
-        address: 'yavne',
-        hasCar: false,
+        username: '2',
+        job: 'BobniK',
+        firstname: 'Or',
+        lastname: 'Li',
+        ride: [],
+        email: 'Bob@bob.bob',
+        notifications: [],
+        active: true,
       }),
-        new User({
-          _id: '3',
-          address: 'haifa',
-          hasCar: false,
-        })];
+      new User({
+        username: '3',
+        job: 'Bobnik',
+        firstname: 'asd',
+        lastname: 'dsa',
+        ride: [],
+        email: 'Bob@bob.bob',
+        notifications: [],
+        active: true,
+      })];
 
       expect(await userController.save(driver)).to.exist;
       await Promise.all(ridersToTest.map(async (u) => {
         const rider = await userController.save(u);
         expect(rider).to.exist;
-        riders.push((rider as IUser)._id);
+        riders.push((rider as IUser).id);
       }));
     });
   } catch (err) {
