@@ -2,29 +2,40 @@ import * as mongoose from 'mongoose';
 import { user as User } from './user.model';
 import { IUser } from './user.interface';
 
-export const userController = {
-  getAll() {
-    return User.find({})
+export class userController {
+  static getAll(conditions?: Object) {
+    return User.find(conditions || {})
     .then((res) => {
       return res;
     }).catch((err) => {
       console.error(err);
       throw err;
     });
-  },
-  getByProp(prop: string, value: any) {
-    return User.findOne({ prop: value })
+  }
+
+  // TODO: Check this function works as intended
+  static getOneByConditions(conditions: Object) {
+    return User.findOne(conditions).populate({
+      path: 'rides',
+      model: 'Ride',
+      populate: {
+        path: 'ride.driver',
+        model: 'User',
+      },
+    })
     .then((res) => {
       return res;
     }).catch((err) => {
       console.log(err);
       throw err;
     });
-  },
-  getByUsername(username: string) {
-    return this.getByProp('username', username);
-  },
-  save(user: IUser) {
+  }
+
+  static getByUsername(username: string) {
+    return this.getOneByConditions({ username });
+  }
+  
+  static save(user: IUser) {
     return user.save()
     .then((res) => {
       return res;
@@ -32,8 +43,9 @@ export const userController = {
       console.error(err);
       throw err;
     });
-  },
-  deleteByUsername(username: string) {
+  }
+
+  static deleteByUsername(username: string) {
     return User.findByIdAndRemove(username)
     .then((res) => {
       return res;
@@ -41,9 +53,10 @@ export const userController = {
       console.error(err);
       throw err;
     });
-  },
-  updateByUsername(username: string, user: Partial<IUser>) {
-    return User.findByIdAndUpdate(username, user as Object, { new: true })
+  }
+
+  static updateByUsername(username: string, user: Partial<IUser>) {
+    return User.findOneAndUpdate({ username }, user as Object, { new: true })
       .then((res) => {
         return res;
       })
@@ -51,5 +64,5 @@ export const userController = {
         console.error(err);
         throw err;
       });
-  },
-};
+  }
+}

@@ -7,8 +7,8 @@ import { userController } from '../user/user.manager';
 import { user as User } from '../user/user.model';
 
 export class rideController {
-  static getAll(conditions: Object) {
-    return Ride.find(conditions)
+  static getAll(conditions?: Object) {
+    return Ride.find(conditions || {})
     .then((res) => {
       return res;
     })
@@ -46,17 +46,16 @@ export class rideController {
     });
   }
 
-  static getAllActive() {
-    return Ride.find({
-      active: true,
-    }).populate({
+  static getOneByConditions(conditions: Object) {
+    return Ride.find(conditions).populate({
       path: 'driver',
       model: 'User',
       populate: {
-        path: 'rides.ride',
+        path: 'rides',
         model: 'Ride',
       },
-    }).populate({
+    })
+    .populate({
       path: 'riders',
       model: 'User',
       populate: {
@@ -74,29 +73,7 @@ export class rideController {
   }
 
   static getById(id: mongoose.Schema.Types.ObjectId) {
-    return Ride.findById(id).populate({
-      path: 'driver',
-      model: 'User',
-      populate: {
-        path: 'rides',
-        model: 'Ride',
-      },
-    })
-    .populate({
-      path: 'riders',
-      model: 'User',
-      populate: {
-        path: 'rides.ride',
-        model: 'Ride',
-      },
-    })
-      .then((res) => {
-        return res;
-      })
-      .catch((err) => {
-        console.error(err);
-        throw err;
-      });
+    return this.getOneByConditions({ _id: id });
   }
 
   static save(ride: IRide) {

@@ -6,7 +6,7 @@ export interface IUser extends mongoose.Document {
   job: string;
   firstname: string;
   lastname: string;
-  ride: {
+  rides: {
     ride: mongoose.Schema.Types.ObjectId | IRide,
     joinDate: Date,
   }[];
