@@ -3,7 +3,7 @@ import { IRide } from './ride.interface';
 import { IUser } from '../user/user.interface';
 import { ride as Ride } from './ride.model';
 import { config } from '../config';
-import { userController } from '../user/user.manager';
+import { userRepository } from '../user/user.repository';
 import { user as User } from '../user/user.model';
 
 export class rideController {
