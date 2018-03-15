@@ -3,8 +3,9 @@ import { IUser } from './user.interface';
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    _id: {
       type: String,
+      unique: true,
       required: true,
     },
     job: {
@@ -25,8 +26,10 @@ const userSchema = new mongoose.Schema(
         ref: 'Ride',
         required: true,
       },
-      joinDate: Date,
-      required: true,
+      joinDate: { 
+        type: Date,
+        required: true,
+      },
     }],
     email: {
       type: String,
@@ -43,4 +46,5 @@ const userSchema = new mongoose.Schema(
     },
   });
 
-export const user = mongoose.model<IUser>('User', userSchema);
+const user = mongoose.model<IUser>('User', userSchema);
+export { user as User};

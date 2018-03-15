@@ -1,11 +1,10 @@
 import 'mocha';
 import { expect } from 'chai';
-import { userRepository } from './user.repository';
-import { user as User } from './user.model';
+import { User } from './user.model';
 import { IUser } from './user.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
-import { userController } from './user.controller';
+import { userService } from './user.service';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
@@ -32,7 +31,7 @@ before('Clear users test DB.', async () => {
         active: true,
       });
   
-      expect(await userRepository.save(user)).to.exist;
+      expect(await userService.save(user)).to.exist;
     });
   } catch (err) {
     console.log(err);
@@ -41,6 +40,6 @@ before('Clear users test DB.', async () => {
 
 describe('User', () => {
   it('Should return all active rides of a user.', () => {
-    userController.getActiveRides(driverid);
+    userService.getActiveRides(driverid);
   }); 
 });
