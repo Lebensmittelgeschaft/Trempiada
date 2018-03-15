@@ -26,12 +26,14 @@ export class rideService {
   }
 
   static addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
-    return rideRepository.updateById(rideid, { $push: { riders: userid } },
-      [{path: 'riders', model: 'User',}]);
+    return rideRepository.updateById(rideid,
+                                     { $push: { riders: userid } },
+                                     [{ path: 'riders', model: 'User' }]);
   }
 
   static removeRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
-    return rideRepository.updateById(rideid, { $pull: { riders: userid } },
-      [{path: 'riders', model: 'User',}]);
+    return rideRepository.updateById(rideid,
+                                     { $pull: { riders: userid } },
+                                     [{ path: 'riders', model: 'User' }]);
   }
 }

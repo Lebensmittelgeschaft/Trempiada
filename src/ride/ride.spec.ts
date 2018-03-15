@@ -5,12 +5,12 @@ import { IRide } from './ride.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
 import { rideService } from './ride.service';
-import { userService } from '../user/user.service'
+import { userService } from '../user/user.service';
 import { User } from '../user/user.model';
 import { IUser } from '../user/user.interface';
 
 (<any>mongoose).Promise = Promise;
-mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
+mongoose.connect(config.mongodbUrl, (err) => {
   if (err) {
     console.log(`Error connection to ${config.mongodbUrl}. ${err}`);
   } else {
@@ -24,7 +24,7 @@ const riders: string[] = [];
 before('Clear rides DB.', async () => {
   try {
     await Ride.remove({});
-    it('Should create test users.', async () => {
+    it.skip('Should create test users.', async () => {
       const driver = new User({
         _id: driverid,
         job: 'Jobnik',

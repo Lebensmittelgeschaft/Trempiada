@@ -10,7 +10,7 @@ import { getRoutes as router } from './router';
 import { config } from './config';
 
 (<any>mongoose).Promise = Promise;
-mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
+mongoose.connect(config.mongodbUrl, (err) => {
   if (err) {
     console.log(`Error connection to ${config.mongodbUrl}. ${err}`);
   } else {
@@ -29,6 +29,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 router(app);
 
-const server = app.listen(parseInt(<string>config.port, undefined), () => {
+const server = app.listen(parseInt(<string>config.port), () => {
   console.log(`Server listening on port ${server.address().port}`);
 });
