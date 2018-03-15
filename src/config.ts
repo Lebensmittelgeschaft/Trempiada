@@ -5,7 +5,7 @@ export const prodConfig = {
 };
 
 const devConfig = {
-  mongodbUrl: `mongodb://omrishtam:Omri2707@ds046677.mlab.com:46677/populatetest` ||
+  mongodbUrl: `mongodb://omri:Omri2707@ds113799.mlab.com:13799/trempdb_dev` ||
               `mongodb://dev:dev@ds159187.mlab.com:59187/the_hitchhikers_guide_to_the_galaxy_dev`,
   port: process.env.PORT || 3000,
 };
