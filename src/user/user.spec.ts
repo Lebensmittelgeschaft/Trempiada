@@ -5,6 +5,9 @@ import { IUser } from './user.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
 import { userService } from './user.service';
+import { Ride } from '../ride/ride.model';
+import { IRide } from '../ride/ride.interface';
+import { rideService } from '../ride/ride.service';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
@@ -15,13 +18,53 @@ mongoose.connect(config.mongodbUrl, { useMongoClient: true }, (err) => {
   }
 });
 
-const driverid = '1';
+const driverid = '10';
+const rides: IRide[] = [];
 before('Clear users test DB.', async () => {
   try {
     await User.remove({});
+    await Ride.remove({});
+    it('Should create rides.', async () => {
+      const ridesToTest = [new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(new Date().getTime() + 100000000),
+        creationDate: new Date(),
+        active: true
+      }),
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(new Date().getTime() + 100000000),
+        creationDate: new Date(),
+        active: false
+      }),
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(new Date().getTime() + 100000000),
+        creationDate: new Date(),
+        active: false
+      })];
+      await Promise.all(ridesToTest.map(async (r) => {
+        const ride = await rideService.save(r);
+        expect(ride).to.exist;
+        rides.push(ride);
+      }));
+    });
+
     it('Should create a user.', async () => {
-      const user = new User({
-        username: driverid,
+      const driver = new User({
+        _id: driverid,
         job: 'Jobnik',
         firstname: 'Bob',
         lastname: 'boB',
@@ -31,7 +74,31 @@ before('Clear users test DB.', async () => {
         active: true,
       });
   
-      expect(await userService.save(user)).to.exist;
+      expect(await userService.save(driver)).to.exist;
+      const ridersToTest = [new User({
+        _id: '2',
+        job: 'BobniK',
+        firstname: 'Or',
+        lastname: 'Li',
+        ride: [],
+        email: 'Bob@bob.bob',
+        notifications: [],
+        active: true,
+      }),
+        new User({
+          _id: '3',
+          job: 'Bobnik',
+          firstname: 'asd',
+          lastname: 'dsa',
+          ride: [],
+          email: 'Bob@bob.bob',
+          notifications: [],
+          active: true,
+        })];
+      /*await Promise.all(ridersToTest.map(async (u) => {
+        const rider = await userService.save(u);
+        expect(rider).to.exist;
+      }));*/
     });
   } catch (err) {
     console.log(err);
@@ -39,7 +106,14 @@ before('Clear users test DB.', async () => {
 });
 
 describe('User', () => {
-  it('Should return all active rides of a user.', () => {
-    userService.getActiveRides(driverid);
+  it('Should add rides to user.', async () => {
+    rides.forEach(async (v) => {
+      expect(await userService.addRide(driverid, v.id)).to.exist;
+    });
+  }); 
+
+  it('Should return all active rides of a user.', async () => {
+    const rides = await userService.getActiveRides(driverid);
+    console.log(rides);
   }); 
 });

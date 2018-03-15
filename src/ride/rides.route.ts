@@ -1,14 +1,13 @@
 import * as express from 'express';
-import { ride as Ride } from './ride.model';
+import { Ride } from './ride.model';
 import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
-import { rideController } from './ride.manager';
 import { config } from '../config';
 const router = express.Router();
 
 /* GET all rides. */
 router.get('/', async (req, res) => {
-  let rides: IRide[] = [];
+  /*let rides: IRide[] = [];
   try {
     if (req.query.active && req.query.active === 'true') {
       rides = await rideController.getAllBeforeDeparture();
@@ -19,7 +18,7 @@ router.get('/', async (req, res) => {
     res.json(rides);
   } catch (err) {
     res.sendStatus(500);
-  }
+  }*/
 });
 
 /* GET all rides that are yet to depart. */
@@ -34,7 +33,7 @@ router.get('/', async (req, res) => {
 
 /* GET a ride. */
 router.get('/:id', async (req, res) => {
-  if (!req.params.id) {
+  /*if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -47,14 +46,14 @@ router.get('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 /* POST a ride. */
 router.post('/', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.body.driver ||
+  /*if (!req.body.driver ||
     !req.body.maxRiders ||
     !req.body.from ||
     !req.body.to ||
@@ -76,12 +75,12 @@ router.post('/', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 /* DELETE a ride. */
 router.delete('/:id', async (req, res) => {
-  if (!req.params.id) {
+  /*if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -94,13 +93,13 @@ router.delete('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 router.put('/:id', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.params.id ||
+  /*if (!req.params.id ||
     !req.body.driver ||
     !req.body.maxRiders ||
     !req.body.from ||
@@ -127,13 +126,13 @@ router.put('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 router.put('/:ride/rider/:user', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.params.ride || !req.params.user) {
+  /*if (!req.params.ride || !req.params.user) {
     res.sendStatus(400);
   } else {
     try {
@@ -147,7 +146,7 @@ router.put('/:ride/rider/:user', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 export { router };

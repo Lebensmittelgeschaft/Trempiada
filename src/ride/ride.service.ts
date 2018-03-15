@@ -1,9 +1,10 @@
 import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
-import { ride as Ride } from './ride.model';
+import { Ride } from './ride.model';
 import { rideRepository } from './ride.repository';
 
 export class rideService {
+
   static getAll(conditions?: Object, select?: string, populate?: Object[]) {
     return rideRepository.getAll(conditions, select, populate);
   }
@@ -12,15 +13,15 @@ export class rideService {
     return rideRepository.save(ride);
   }
 
-  static addRide(ride: IRide) {
-    return rideRepository.save(ride);
+  static updateById(id: mongoose.Schema.Types.ObjectId, update: Object, populate?: Object[]) {
+    return rideRepository.updateById(id, update, populate);
   }
 
-  static getRide(ride: mongoose.Schema.Types.ObjectId, populate?: Object[], select?: string) {
+  static getById(ride: mongoose.Schema.Types.ObjectId, populate?: Object[], select?: string) {
     return rideRepository.getOneByProps({ _id: ride }, populate, select);
   }
 
-  static disableRide(ride: mongoose.Schema.Types.ObjectId) {
+  static deleteById(ride: mongoose.Schema.Types.ObjectId) {
     return rideRepository.updateById(ride, { active: false });
   }
 

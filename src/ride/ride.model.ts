@@ -38,4 +38,5 @@ const rideSchema = new mongoose.Schema({
   },
 });
 
-export const ride = mongoose.model<IRide>('Ride', rideSchema);
+const ride = mongoose.model<IRide>('Ride', rideSchema);
+export { ride as Ride };

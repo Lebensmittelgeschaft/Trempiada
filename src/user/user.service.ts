@@ -4,6 +4,7 @@ import { IUser } from './user.interface';
 import { userRepository } from './user.repository';
 
 export class userService {
+  
   static getAll(conditions?: Object, select?: string, populate?: Object[]) {
     return userRepository.getAll(conditions, select, populate);
   }

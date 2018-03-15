@@ -1,22 +1,22 @@
 import * as express from 'express';
-import { user as User } from './user.model';
+import { User } from './user.model';
 import { IUser } from './user.interface';
-import { userController } from './user.manager';
+import { userRepository } from './user.repository';
 const router = express.Router();
 
 /* GET all users. */
 router.get('/', async (req, res) => {
-  try {
+  /*try {
     const users = await userController.getAll();
     res.json(users);
   } catch (err) {
     res.sendStatus(500);
-  }
+  }*/
 });
 
 /* GET a user. */
 router.get('/:id', async (req, res) => {
-  if (!req.params.id) {
+  /*if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -29,14 +29,14 @@ router.get('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 /* POST a user. */
 router.post('/', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.body.id ||
+  /*if (!req.body.id ||
     !req.body.address ||
     !req.body.hasCar) {
     res.sendStatus(400);
@@ -53,12 +53,12 @@ router.post('/', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 /* DELETE a user. */
 router.delete('/:id', async (req, res) => {
-  if (!req.params.id) {
+  /*if (!req.params.id) {
     res.sendStatus(400);
   } else {
     try {
@@ -71,14 +71,14 @@ router.delete('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 /* UPDATE a user's data. */
 router.put('/:id', async (req, res) => {
 
   // Checks if there's any invalid field.
-  if (!req.params.id ||
+  /*if (!req.params.id ||
     !req.body.address ||
     !req.body.hasCar) {
     res.sendStatus(400);
@@ -98,7 +98,7 @@ router.put('/:id', async (req, res) => {
     } catch (err) {
       res.sendStatus(500);
     }
-  }
+  }*/
 });
 
 export { router };
