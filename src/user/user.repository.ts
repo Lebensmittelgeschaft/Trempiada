@@ -4,20 +4,20 @@ import { IUser } from './user.interface';
 
 export class userRepository {
   
-  static getAll(conditions?: Object, select?: string, populate?: any) {
+  static getAll(conditions?: any, select?: string, populate?: any) {
     if (populate) {
-      return User.find(conditions || {}, select || {}).populate(populate)
+      return User.find(conditions || {}, select || {}).populate(populate);
     }
 
     return User.find(conditions || {}, select || {});
   }
 
-  static getOneByProps(conditions: Object, populate?: any, select?: string) {
+  static getOneByProps(conditions: any, populate?: any, select?: string) {
     if (populate) {
       return User.findOne(conditions, select || {}).populate(populate || {});
     }
 
-    return User.findOne(conditions, select || {})
+    return User.findOne(conditions, select || {});
   }
 
   static save(user: IUser) {
@@ -29,7 +29,7 @@ export class userRepository {
       return User.findByIdAndRemove(id).populate(populate || {});
     }
 
-    return User.findByIdAndRemove(id)
+    return User.findByIdAndRemove(id);
   }
 
   static updateById(id: string, update: any, populate?: any) {

@@ -5,7 +5,7 @@ import { rideRepository } from './ride.repository';
 
 export class rideService {
 
-  static getAll(conditions?: Object, select?: string, populate?: Object[]) {
+  static getAll(conditions?: any, select?: string, populate?: any) {
     return rideRepository.getAll(conditions, select, populate);
   }
 
@@ -13,25 +13,25 @@ export class rideService {
     return rideRepository.save(ride);
   }
 
-  static updateById(id: mongoose.Schema.Types.ObjectId, update: Object, populate?: Object[]) {
+  static updateById(id: mongoose.Types.ObjectId, update: any, populate?: any) {
     return rideRepository.updateById(id, update, populate);
   }
 
-  static getById(ride: mongoose.Schema.Types.ObjectId, populate?: Object[], select?: string) {
+  static getById(ride: mongoose.Types.ObjectId, populate?: any, select?: string) {
     return rideRepository.getOneByProps({ _id: ride }, populate, select);
   }
 
-  static deleteById(ride: mongoose.Schema.Types.ObjectId) {
+  static deleteById(ride: mongoose.Types.ObjectId) {
     return rideRepository.updateById(ride, { active: false });
   }
 
-  static addRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
+  static addRider(rideid: mongoose.Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $push: { riders: userid } },
                                      [{ path: 'riders', model: 'User' }]);
   }
 
-  static removeRider(rideid: mongoose.Schema.Types.ObjectId, userid: string) {
+  static removeRider(rideid: mongoose.Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $pull: { riders: userid } },
                                      [{ path: 'riders', model: 'User' }]);

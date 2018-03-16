@@ -5,7 +5,7 @@ import { userRepository } from './user.repository';
 
 export class userService {
   
-  static getAll(conditions?: Object, select?: string, populate?: any) {
+  static getAll(conditions?: any, select?: string, populate?: any) {
     return userRepository.getAll(conditions, select, populate);
   }
 
@@ -21,11 +21,11 @@ export class userService {
     return userRepository.updateById(id, update, populate);
   }
 
-  static addRide(id: string, ride: mongoose.Schema.Types.ObjectId) {
+  static addRide(id: string, ride: mongoose.Types.ObjectId) {
     return userRepository.updateById(id, { $push: { rides: { ride, joinDate: new Date() } } });
   }
 
-  static removeRide(id: string, ride: mongoose.Schema.Types.ObjectId) {
+  static removeRide(id: string, ride: mongoose.Types.ObjectId) {
     return userRepository.updateById(id, { $pull: { rides: { ride } } });
   }
 

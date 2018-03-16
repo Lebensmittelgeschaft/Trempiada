@@ -4,7 +4,7 @@ import { INotification } from './notification.interface';
 
 const notificationSchema = new mongoose.Schema({
   user: {
-  	type: mongoose.Schema.Types.ObjectId,
+  	type: mongoose.Types.ObjectId,
   	required: true,
   },
   content: {

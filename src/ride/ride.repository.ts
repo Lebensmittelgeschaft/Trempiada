@@ -5,23 +5,39 @@ import { config } from '../config';
 
 export class rideRepository {
 
-  static getAll(conditions?: Object, select?: string, populate?: Object[]) {
-    return Ride.find(conditions || {}, select || {}).populate(populate || {});
+  static getAll(conditions?: any, select?: string, populate?: any) {
+    if (populate) {
+      return Ride.find(conditions || {}, select || {}).populate(populate);
+    }
+
+    return Ride.find(conditions || {}, select || {});
   }
 
-  static getOneByProps(conditions: Object, populate?: Object[], select?: string) {
-    return Ride.findOne(conditions, select || {}).populate(populate || {});
+  static getOneByProps(conditions: any, populate?: any, select?: string) {
+    if (populate) {
+      return Ride.findOne(conditions, select || {}).populate(populate || {});
+    }
+
+    return Ride.findOne(conditions, select || {});
   }
 
   static save(ride: IRide) {
     return ride.save();
   }
 
-  static deleteById(id: mongoose.Schema.Types.ObjectId, populate?: Object[]) {
-    return Ride.findByIdAndRemove(id).populate(populate || {});
+  static deleteById(id: mongoose.Types.ObjectId, populate?: any) {
+    if (populate) {
+      return Ride.findByIdAndRemove(id).populate(populate || {});
+    }
+
+    return Ride.findByIdAndRemove(id);
   }
 
-  static updateById(id: mongoose.Schema.Types.ObjectId, update: Object, populate?: Object[]) {
-    return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate || {});
+  static updateById(id: mongoose.Types.ObjectId, update: any, populate?: any) {
+    if (populate) {
+      return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate || {});
+    }
+
+    return Ride.findByIdAndUpdate(id, update, { new: true });
   }
 }

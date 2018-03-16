@@ -127,5 +127,6 @@ describe('User', () => {
 
   it('Should return all active rides of a user.', async () => {
     const rides = await userService.getActiveRides(driverid);
+    expect(rides).to.have.length(1);
   }); 
 });
