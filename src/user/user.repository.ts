@@ -14,7 +14,7 @@ export class userRepository {
 
   static getOneByProps(conditions: any, populate?: any, select?: string) {
     if (populate) {
-      return User.findOne(conditions, select || {}).populate(populate || {});
+      return User.findOne(conditions, select || {}).populate(populate);
     }
 
     return User.findOne(conditions, select || {});
@@ -26,7 +26,7 @@ export class userRepository {
 
   static deleteById(id: string, populate?: any) {
     if (populate) {
-      return User.findByIdAndRemove(id).populate(populate || {});
+      return User.findByIdAndRemove(id).populate(populate);
     }
 
     return User.findByIdAndRemove(id);
@@ -34,7 +34,7 @@ export class userRepository {
 
   static updateById(id: string, update: any, populate?: any) {
     if (populate) {
-      return User.findByIdAndUpdate(id, update, { new: true }).populate(populate || {});
+      return User.findByIdAndUpdate(id, update, { new: true }).populate(populate);
     }
 
     return User.findByIdAndUpdate(id, update, { new: true });

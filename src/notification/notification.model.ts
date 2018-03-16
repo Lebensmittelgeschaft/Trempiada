@@ -4,7 +4,8 @@ import { INotification } from './notification.interface';
 
 const notificationSchema = new mongoose.Schema({
   user: {
-  	type: mongoose.Types.ObjectId,
+    type: String,
+    ref: 'User',
   	required: true,
   },
   content: {
@@ -21,4 +22,5 @@ const notificationSchema = new mongoose.Schema({
   },
 });
 
-export const notification = mongoose.model<INotification>('Notification', notificationSchema);
+const notification = mongoose.model<INotification>('Notification', notificationSchema);
+export { notification as Notification };

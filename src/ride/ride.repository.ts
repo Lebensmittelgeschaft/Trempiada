@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
 import { Ride } from './ride.model';
-import { config } from '../config';
 
 export class rideRepository {
 
@@ -15,7 +14,7 @@ export class rideRepository {
 
   static getOneByProps(conditions: any, populate?: any, select?: string) {
     if (populate) {
-      return Ride.findOne(conditions, select || {}).populate(populate || {});
+      return Ride.findOne(conditions, select || {}).populate(populate);
     }
 
     return Ride.findOne(conditions, select || {});
@@ -27,7 +26,7 @@ export class rideRepository {
 
   static deleteById(id: mongoose.Types.ObjectId, populate?: any) {
     if (populate) {
-      return Ride.findByIdAndRemove(id).populate(populate || {});
+      return Ride.findByIdAndRemove(id).populate(populate);
     }
 
     return Ride.findByIdAndRemove(id);
@@ -35,7 +34,7 @@ export class rideRepository {
 
   static updateById(id: mongoose.Types.ObjectId, update: any, populate?: any) {
     if (populate) {
-      return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate || {});
+      return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate);
     }
 
     return Ride.findByIdAndUpdate(id, update, { new: true });

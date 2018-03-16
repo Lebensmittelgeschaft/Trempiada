@@ -8,11 +8,15 @@ import { userService } from './user.service';
 import { Ride } from '../ride/ride.model';
 import { IRide } from '../ride/ride.interface';
 import { rideService } from '../ride/ride.service';
+import { userController } from './user.controller';
+import { Notification } from '../notification/notification.model';
+import { INotification } from '../notification/notification.interface';
+import { notificationService } from '../notification/notification.service';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
   if (err) {
-    console.log(`Error connection to ${config.mongodbUrl}. ${err}`);
+    console.error(`Error connection to ${config.mongodbUrl}. ${err}`);
   } else {
     console.log(`Succeesfully connected to: ${config.mongodbUrl}`);
   }
@@ -20,16 +24,18 @@ mongoose.connect(config.mongodbUrl, (err) => {
 
 const driverid = '10';
 const rides: IRide[] = [];
+let notifications: INotification[] = [];
 before('Clear users test DB.', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
+    await Notification.remove({});
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 });
 
-describe('User', () => {
+describe('User Service', () => {
   it('Should give all users.', async () => {
     expect(await userService.getAll()).to.exist;
   });
@@ -76,6 +82,29 @@ describe('User', () => {
     }
   });
 
+  it('Should create notifications.', async () => {
+    try {
+      notifications = [new Notification({
+        user: '10',
+        type: 'Alert',
+        content: 'TEST',
+        active: true,
+      }),
+        new Notification({
+          user: '10',
+          type: 'Alert',
+          content: 'TEST2',
+          active: false,
+        })];
+      await Promise.all(notifications.map(async (n) => {
+        const notification = await notificationService.save(n);
+        expect(notification).to.exist;
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
   it('Should create users.', async () => {
     try {
       const driver = new User({
@@ -85,7 +114,7 @@ describe('User', () => {
         lastname: 'boB',
         ride: [],
         email: 'Bob@bob.bob',
-        notifications: [],
+        notifications: [notifications[0].id],
         active: true,
       });
 
@@ -129,4 +158,11 @@ describe('User', () => {
     const rides = await userService.getActiveRides(driverid);
     expect(rides).to.have.length(1);
   }); 
+});
+
+describe('User Controller', () => {
+  it('Should give all users', async () => {
+    const users = await userController.getAll();
+    console.log(users);
+  });
 });

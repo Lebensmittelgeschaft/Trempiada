@@ -8,11 +8,12 @@ import { rideService } from './ride.service';
 import { userService } from '../user/user.service';
 import { User } from '../user/user.model';
 import { IUser } from '../user/user.interface';
+import { Notification } from '../notification/notification.model';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
   if (err) {
-    console.log(`Error connection to ${config.mongodbUrl}. ${err}`);
+    console.error(`Error connection to ${config.mongodbUrl}. ${err}`);
   } else {
     console.log(`Succeesfully connected to: ${config.mongodbUrl}`);
   }
@@ -26,8 +27,9 @@ before('Clear rides DB.', async () => {
   try {
     await Ride.remove({});
     await User.remove({});
+    await Notification.remove({});
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 });
 
