@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 
-export interface INotification extends mongoose.Document {
-  user: mongoose.Types.ObjectId;
+export interface INotification {
   content: String;
   type: String;
   active: Boolean;
+  creationDate: Date;
 }

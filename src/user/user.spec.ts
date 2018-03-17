@@ -4,14 +4,12 @@ import { User } from './user.model';
 import { IUser } from './user.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
-import { userService } from './user.service';
+import { userRepository } from './user.repository';
 import { Ride } from '../ride/ride.model';
 import { IRide } from '../ride/ride.interface';
-import { rideService } from '../ride/ride.service';
+import { rideRepository } from '../ride/ride.repository';
 import { userController } from './user.controller';
-import { Notification } from '../notification/notification.model';
 import { INotification } from '../notification/notification.interface';
-import { notificationService } from '../notification/notification.service';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -24,20 +22,31 @@ mongoose.connect(config.mongodbUrl, (err) => {
 
 const driverid = '10';
 const rides: IRide[] = [];
-let notifications: INotification[] = [];
+const notifications: INotification[] = [{
+  type: 'Alert',
+  content: 'TEST',
+  active: true,
+  creationDate: new Date(),
+},
+  {
+    type: 'Alert',
+    content: 'TEST2',
+    active: false,
+    creationDate: new Date(),
+  }];
+
 before('Clear users test DB.', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
-    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }
 });
 
-describe('User Service', () => {
+describe('User Repository', () => {
   it('Should give all users.', async () => {
-    expect(await userService.getAll()).to.exist;
+    expect(await userRepository.getAll()).to.exist;
   });
   
   it('Should create test rides.', async () => {
@@ -73,32 +82,9 @@ describe('User Service', () => {
           active: false,
         })];
       await Promise.all(ridesToTest.map(async (r) => {
-        const ride = await rideService.save(r);
+        const ride = await rideRepository.save(r);
         expect(ride).to.exist;
         rides.push(ride);
-      }));
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-  it('Should create notifications.', async () => {
-    try {
-      notifications = [new Notification({
-        user: '10',
-        type: 'Alert',
-        content: 'TEST',
-        active: true,
-      }),
-        new Notification({
-          user: '10',
-          type: 'Alert',
-          content: 'TEST2',
-          active: false,
-        })];
-      await Promise.all(notifications.map(async (n) => {
-        const notification = await notificationService.save(n);
-        expect(notification).to.exist;
       }));
     } catch (err) {
       console.error(err);
@@ -114,11 +100,11 @@ describe('User Service', () => {
         lastname: 'boB',
         ride: [],
         email: 'Bob@bob.bob',
-        notifications: [notifications[0].id],
+        notifications: [notifications[0]],
         active: true,
       });
 
-      expect(await userService.save(driver)).to.exist;
+      expect(await userRepository.save(driver)).to.exist;
       const ridersToTest = [new User({
         _id: '2',
         job: 'BobniK',
@@ -140,8 +126,24 @@ describe('User Service', () => {
           active: true,
         })];
       await Promise.all(ridersToTest.map(async (u) => {
-        const rider = await userService.save(u);
+        const rider = await userRepository.save(u);
         expect(rider).to.exist;
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  });
+});
+
+describe('User Controller', () => {
+  it('Should give all users', async () => {
+    const users = await userController.getAllUsers();
+  });
+
+  it('Should create notifications.', async () => {
+    try {
+      await Promise.all(notifications.map(async (n) => {
+        expect(await userController.pushNotification('2', notifications[1])).to.exist;
       }));
     } catch (err) {
       console.error(err);
@@ -149,20 +151,13 @@ describe('User Service', () => {
   });
 
   it('Should add rides to user.', async () => {
-    rides.forEach(async (v) => {
-      expect(await userService.addRide(driverid, v.id)).to.exist;
-    });
+    await Promise.all(rides.map(async (r) => {
+      expect(await userController.addRide(driverid, r.id)).to.exist;
+    }));
   }); 
 
   it('Should return all active rides of a user.', async () => {
-    const rides = await userService.getActiveRides(driverid);
+    const rides = await userController.getActiveRides(driverid);
     expect(rides).to.have.length(1);
   }); 
-});
-
-describe('User Controller', () => {
-  it('Should give all users', async () => {
-    const users = await userController.getAll();
-    console.log(users);
-  });
 });

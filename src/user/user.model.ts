@@ -35,9 +35,22 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     notifications: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Notification',
-      required: true,
+      content: {
+        type: String,
+        required: true,
+      },
+      type: {
+        type: String,
+        required: true,
+      },
+      active: {
+        type: Boolean,
+        required: true,
+      },
+      creationDate: {
+        type: Date,
+        required: true,
+      },
     }],
     active: {
       type: Boolean,
@@ -46,4 +59,4 @@ const userSchema = new mongoose.Schema(
   });
 
 const user = mongoose.model<IUser>('User', userSchema);
-export { user as User};
+export { user as User };

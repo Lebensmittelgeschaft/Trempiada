@@ -4,11 +4,11 @@ import { Ride } from './ride.model';
 import { IRide } from './ride.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
-import { rideService } from './ride.service';
-import { userService } from '../user/user.service';
+import { rideRepository } from './ride.repository';
+import { userRepository } from '../user/user.repository';
 import { User } from '../user/user.model';
 import { IUser } from '../user/user.interface';
-import { Notification } from '../notification/notification.model';
+import { rideController } from './ride.controller';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -27,13 +27,12 @@ before('Clear rides DB.', async () => {
   try {
     await Ride.remove({});
     await User.remove({});
-    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }
 });
 
-describe('Ride Service', () => {
+describe('Ride Repository', () => {
   it('Should create test rides.', async () => {
     try {
       const ridesToTest = [new Ride({
@@ -67,7 +66,7 @@ describe('Ride Service', () => {
           active: false,
         })];
       await Promise.all(ridesToTest.map(async (r) => {
-        const ride = await rideService.save(r);
+        const ride = await rideRepository.save(r);
         expect(ride).to.exist;
         rides.push(ride);
       }));
@@ -109,46 +108,29 @@ describe('Ride Service', () => {
         active: true,
       })];
 
-    expect(await userService.save(driver)).to.exist;
+    expect(await userRepository.save(driver)).to.exist;
     await Promise.all(ridersToTest.map(async (u) => {
-      const rider = await userService.save(u);
+      const rider = await userRepository.save(u);
       expect(rider).to.exist;
       riders.push((rider as IUser).id);
     }));
   });
 
-  it('Should add rider to ride', async () => {
-    const ride = await rideService.addRider(rides[1].id, riders[1]);
-    expect(ride).to.exist;
-    expect(ride).to.have.property('riders');
-    expect((<IRide>ride).riders).to.have.length(rides[1].riders.length + 1);
-
-    it('Should get rider', async () => {
-      expect(await userService.getById((<IUser>((<IRide>ride).riders[1])).id)).to.exist;
-    });
-    
-    it('Should remove rider from ride', async () => {
-      const newRide = await rideService.removeRider(rides[1].id,
-         (<IUser>(<IRide>ride).riders[0]).id);
-      expect(newRide).to.exist;
-      expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
-    });
-  });
-
   it('Should get all rides', async () => {
-    const allRides = await rideService.getAll();
+    const allRides = await rideRepository.getAll();
     expect(allRides).to.exist;
     expect(allRides).to.have.length(rides.length);
   });
   
   it('Should update ride source', async () => {
-    const updatedRide = await rideService.updateById(rides[1].id, { to: 'רמת אביב' });
+    const updatedRide = await rideRepository.updateById(rides[1].id, { to: 'רמת אביב' });
     expect(updatedRide).to.exist;
     expect(updatedRide).to.have.property('to', 'רמת אביב');
   });
 
   it('Should find ride', async () => {
-    const ride = await rideService.getById(rides[0].id, { path: 'riders', model: 'User' });
+    const ride = await rideRepository.getOneByProps(
+      { _id: rides[0].id }, { path: 'riders', model: 'User' });
     expect(ride).to.exist;
     expect((<IRide>ride).id).to.equal(rides[0].id);
     expect(ride).to.have.property('driver', rides[0].driver);
@@ -164,7 +146,7 @@ describe('Ride Service', () => {
 
   it('Should delete ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideService.deleteById(rides[0].id) as IRide).to.exist;
+    expect(ride = await rideRepository.deleteById(rides[0].id) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
     expect(ride.driver).to.equal(driverid);
@@ -175,5 +157,27 @@ describe('Ride Service', () => {
     expect(ride).to.have.property('from', rides[0].from);
     expect(ride).to.have.property('to', rides[0].to);
     expect(ride.departureDate.getTime()).to.equal(rides[0].departureDate.getTime());
+  });
+});
+
+describe('Ride Controller', () => {
+  let ride: IRide | null;
+  it('Should add rider to ride', async () => {
+    ride = await rideController.addRider(rides[1].id, riders[1]);
+    expect(ride).to.exist;
+    expect(ride).to.have.property('riders');
+    expect((<IRide>ride).riders).to.have.length(rides[1].riders.length + 1);
+
+    it('Should get rider', async () => {
+      expect(await userRepository.getOneByProps(
+        { _id: (<IUser>((<IRide>ride).riders[1])).id })).to.exist;
+    });
+  });
+
+  it('Should remove rider from ride', async () => {
+    const newRide = await rideController.removeRider(rides[1].id,
+       (<IUser>(<IRide>ride).riders[0]).id);
+    expect(newRide).to.exist;
+    expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
   });
 });
