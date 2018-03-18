@@ -151,7 +151,7 @@ describe('Ride Repository', () => {
     if (ride.riders.length > 0) {
       expect(ride.riders[0].rider).to.equal((<IUser>rides[0].riders[0].rider).id);
     }
-    
+
     expect(ride).to.have.property('from', rides[0].from);
     expect(ride).to.have.property('to', rides[0].to);
     expect(ride.departureDate.getTime()).to.equal(rides[0].departureDate.getTime());
@@ -168,7 +168,7 @@ describe('Ride Controller', () => {
   });
 
   it('Should add rider to ride', async () => {
-    ride = await rideController.addRider(rides[1].id, riders[1]);
+    ride = await rideController.addRider(rides[1].id, riders[2]);
     expect(ride).to.exist;
     expect(ride).to.have.property('riders');
     expect((<IRide>ride).riders).to.have.length(rides[1].riders.length + 1);
@@ -187,7 +187,8 @@ describe('Ride Controller', () => {
 
   it('Should return all active rides of a rider.', async () => {
     try {
-      const rides = await rideController.getRiderActiveRides(driverid);
+      const rides = await rideController.getRiderActiveRides(riders[2]);
+      console.log(rides);
       expect(rides).to.exist;
       expect(rides).to.have.length(rides.filter((r) => {
         return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
@@ -211,7 +212,7 @@ describe('Ride Controller', () => {
 
   it('Should remove rider from ride', async () => {
     const newRide = await rideController.deleteRider(rides[1].id,
-       (<IUser>(<IRide>ride).riders[0].rider).id);
+       (<string>(<IRide>ride).riders[0].rider));
     expect(newRide).to.exist;
     expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
   });

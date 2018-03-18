@@ -40,12 +40,28 @@ export class rideController {
                                      'driver riders.rider');
   }
 
-  static getRiderActiveRides(id: string) {
-    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false },
+  static async getRiderActiveRides(id: string) {
+    let rides = await rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false },
       { path: 'riders.rider', model: 'User', match: { _id: id } });
+    if (rides) {
+      rides = rides.filter((r) => {
+        return r.riders.filter((rider) => {
+           return rider.rider != null;
+        }).length > 0;});
+    }
+
+    return rides;
   }
 
-  static getDriverActiveRides(id: string) {
-    return rideRepository.getAll({ driver: id, departureDate: { $gte: new Date() }, isDeleted: false });
+  static async getDriverActiveRides(id: string) {
+    let rides = await rideRepository.getAll({ driver: id, departureDate: { $gte: new Date() }, isDeleted: false });
+    if (rides) {
+      rides = rides.filter((r) => {
+        return r.riders.filter((rider) => {
+           return rider.rider != null;
+        }).length > 0;});
+    }
+
+    return rides;
   }
 }
