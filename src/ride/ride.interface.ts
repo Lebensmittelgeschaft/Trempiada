@@ -10,5 +10,5 @@ export interface IRide extends mongoose.Document {
   to: string;
   departureDate: Date;
   creationDate: Date;
-  active: boolean;
+  isDeleted?: boolean;
 }

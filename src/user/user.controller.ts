@@ -5,18 +5,19 @@ import { INotification } from '../notification/notification.interface';
 export class userController {
 
   static getAllUsers() {
-    return userRepository.getAll(undefined, undefined, 'rides.ride');
+    return userRepository.getAll({ isDeleted: false }, undefined, 'rides.ride');
   }
 
   static getUser(id: string) {
-    return userRepository.getOneByProps({ _id: id }, 'rides.ride');
+    return userRepository.getOneByProps({ _id: id, isDeleted: false }, 'rides.ride');
   }
   
   static async getUserActiveRides(id: string) {
-    const userRides = await userRepository.getOneByProps({ _id: id },
-      { path: 'rides.ride', model: 'Ride', match: { active: true } });
-    if (userRides) {
-      return userRides.rides.filter((e) => { return e.ride != null; });
+    const user = await userRepository.getOneByProps({ _id: id },
+      { path: 'rides.ride', model: 'Ride', match: { departureDate: { $gte: new Date() }, isDeleted: false } });
+    if (user) {
+      user.rides = user.rides.filter((e) => { return e.ride != null; });
+      return user;
     }
   }
 

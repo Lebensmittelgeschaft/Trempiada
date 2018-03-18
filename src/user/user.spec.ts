@@ -46,12 +46,25 @@ before('Clear users test DB.', async () => {
 
 describe('User Repository', () => {
   it('Should give all users.', async () => {
-    expect(await userRepository.getAll()).to.exist;
+    try {
+      expect(await userRepository.getAll()).to.exist;
+    } catch (err) {
+      console.error(err);
+    }
   });
   
   it('Should create test rides.', async () => {
-    try {
-      const ridesToTest = [new Ride({
+    const ridesToTest = [new Ride({
+      driver: driverid,
+      maxRiders: 4,
+      riders: [],
+      from: 'תל אביב',
+      to: 'ראשון לציון',
+      departureDate: new Date(new Date().getTime() + 100000000),
+      creationDate: new Date(),
+      isDeleted: false,
+    }),
+      new Ride({
         driver: driverid,
         maxRiders: 4,
         riders: [],
@@ -59,28 +72,19 @@ describe('User Repository', () => {
         to: 'ראשון לציון',
         departureDate: new Date(new Date().getTime() + 100000000),
         creationDate: new Date(),
-        active: true,
+        isDeleted: false,
       }),
-        new Ride({
-          driver: driverid,
-          maxRiders: 4,
-          riders: [],
-          from: 'תל אביב',
-          to: 'ראשון לציון',
-          departureDate: new Date(new Date().getTime() + 100000000),
-          creationDate: new Date(),
-          active: false,
-        }),
-        new Ride({
-          driver: driverid,
-          maxRiders: 4,
-          riders: [],
-          from: 'תל אביב',
-          to: 'ראשון לציון',
-          departureDate: new Date(new Date().getTime() + 100000000),
-          creationDate: new Date(),
-          active: false,
-        })];
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(new Date().getTime() - 100000000),
+        creationDate: new Date(),
+        isDeleted: false,
+      })];
+    try {
       await Promise.all(ridesToTest.map(async (r) => {
         const ride = await rideRepository.save(r);
         expect(ride).to.exist;
@@ -92,39 +96,39 @@ describe('User Repository', () => {
   });
 
   it('Should create users.', async () => {
-    try {
-      const driver = new User({
-        _id: driverid,
-        job: 'Jobnik',
-        firstname: 'Bob',
-        lastname: 'boB',
-        ride: [],
-        email: 'Bob@bob.bob',
-        notifications: [notifications[0]],
-        active: true,
-      });
+    const driver = new User({
+      _id: driverid,
+      job: 'Jobnik',
+      firstname: 'Bob',
+      lastname: 'boB',
+      rides: [],
+      email: 'Bob@bob.bob',
+      notifications: [notifications[0]],
+      isDeleted: false,
+    });
 
-      expect(await userRepository.save(driver)).to.exist;
-      const ridersToTest = [new User({
-        _id: '2',
-        job: 'BobniK',
-        firstname: 'Or',
-        lastname: 'Li',
-        ride: [],
+    expect(await userRepository.save(driver)).to.exist;
+    const ridersToTest = [new User({
+      _id: '2',
+      job: 'BobniK',
+      firstname: 'Or',
+      lastname: 'Li',
+      rides: [],
+      email: 'Bob@bob.bob',
+      notifications: [],
+      isDeleted: false,
+    }),
+      new User({
+        _id: '3',
+        job: 'Bobnik',
+        firstname: 'asd',
+        lastname: 'dsa',
+        rides: [],
         email: 'Bob@bob.bob',
         notifications: [],
-        active: true,
-      }),
-        new User({
-          _id: '3',
-          job: 'Bobnik',
-          firstname: 'asd',
-          lastname: 'dsa',
-          ride: [],
-          email: 'Bob@bob.bob',
-          notifications: [],
-          active: true,
-        })];
+        isDeleted: false,
+      })];
+    try {
       await Promise.all(ridersToTest.map(async (u) => {
         const rider = await userRepository.save(u);
         expect(rider).to.exist;
@@ -137,7 +141,11 @@ describe('User Repository', () => {
 
 describe('User Controller', () => {
   it('Should give all users', async () => {
-    const users = await userController.getAllUsers();
+    try {
+      const users = await userController.getAllUsers();
+    } catch (err) {
+      console.error(err);
+    }
   });
 
   it('Should create notifications.', async () => {
@@ -151,13 +159,33 @@ describe('User Controller', () => {
   });
 
   it('Should add rides to user.', async () => {
-    await Promise.all(rides.map(async (r) => {
-      expect(await userController.addRide(driverid, r.id)).to.exist;
-    }));
+    try {
+      await Promise.all(rides.map(async (r) => {
+        expect(await userController.addRide(driverid, r.id)).to.exist;
+      }));
+    } catch (err) {
+      console.error(err);
+    }
   }); 
 
   it('Should return all active rides of a user.', async () => {
-    const rides = await userController.getActiveRides(driverid);
-    expect(rides).to.have.length(1);
+    try {
+      const user = await userController.getUserActiveRides(driverid);
+      expect(user).to.exist;
+      expect((<IUser>user).rides).to.have.length(rides.filter((r) => {
+        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
+      }).length);
+    } catch (err) {
+      console.error(err);
+    }
   }); 
+});
+
+after('Delete all documents from all collections', async () => {
+  try {
+    await User.remove({});
+    await Ride.remove({});
+  } catch (err) {
+    console.error(err);
+  }
 });

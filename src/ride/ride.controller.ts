@@ -5,7 +5,11 @@ import { IRide } from './ride.interface';
 export class rideController {
 
   static getAllRides() {
-    return rideRepository.getAll(undefined, undefined, 'riders');
+    return rideRepository.getAll({ isDeleted: false }, undefined, 'riders');
+  }
+
+  static getActiveRides() {
+    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false }, undefined, 'driver riders');
   }
 
   static addRide(ride: IRide) {

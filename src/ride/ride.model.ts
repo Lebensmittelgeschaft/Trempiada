@@ -32,9 +32,9 @@ const rideSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  active: {
+  isDeleted: {
     type: Boolean,
-    required: true,
+    default: false,
   },
 });
 

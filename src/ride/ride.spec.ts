@@ -43,7 +43,7 @@ describe('Ride Repository', () => {
         to: 'ראשון לציון',
         departureDate: new Date(new Date().getTime() + 100000000),
         creationDate: new Date(),
-        active: true,
+        isDeleted: false,
       }),
         new Ride({
           driver: driverid,
@@ -53,7 +53,6 @@ describe('Ride Repository', () => {
           to: 'ראשון לציון',
           departureDate: new Date(new Date().getTime() + 100000000),
           creationDate: new Date(),
-          active: false,
         }),
         new Ride({
           driver: driverid,
@@ -61,9 +60,9 @@ describe('Ride Repository', () => {
           riders: [],
           from: 'תל אביב',
           to: 'ראשון לציון',
-          departureDate: new Date(new Date().getTime() + 100000000),
+          departureDate: new Date(new Date().getTime() - 100000000),
           creationDate: new Date(),
-          active: false,
+          isDeleted: false,
         })];
       await Promise.all(ridesToTest.map(async (r) => {
         const ride = await rideRepository.save(r);
@@ -81,10 +80,9 @@ describe('Ride Repository', () => {
       job: 'Jobnik',
       firstname: 'Bob',
       lastname: 'boB',
-      ride: [],
+      rides: [],
       email: 'Bob@bob.bob',
       notifications: [],
-      active: true,
     });
 
     const ridersToTest = [new User({
@@ -92,20 +90,20 @@ describe('Ride Repository', () => {
       job: 'BobniK',
       firstname: 'Or',
       lastname: 'Li',
-      ride: [],
+      rides: [],
       email: 'Bob@bob.bob',
       notifications: [],
-      active: true,
+      isDeleted: false,
     }),
       new User({
         _id: '23',
         job: 'Bobnik',
         firstname: 'asd',
         lastname: 'dsa',
-        ride: [],
+        rides: [],
         email: 'Bob@bob.bob',
         notifications: [],
-        active: true,
+        isDeleted: true,
       })];
 
     expect(await userRepository.save(driver)).to.exist;
@@ -121,7 +119,7 @@ describe('Ride Repository', () => {
     expect(allRides).to.exist;
     expect(allRides).to.have.length(rides.length);
   });
-  
+
   it('Should update ride source', async () => {
     const updatedRide = await rideRepository.updateById(rides[1].id, { to: 'רמת אביב' });
     expect(updatedRide).to.exist;
@@ -139,7 +137,7 @@ describe('Ride Repository', () => {
     expect(ride).to.have.property('from', rides[0].from);
     expect((<IRide>ride).departureDate.getTime()).to.equal(rides[0].departureDate.getTime());
     expect((<IRide>ride).creationDate.getTime()).to.equal(rides[0].creationDate.getTime());
-    expect(ride).to.have.property('active', rides[0].active);
+    expect(ride).to.have.property('isDeleted', rides[0].isDeleted);
     expect(ride).to.have.property('riders');
     expect((<IRide>ride).riders).to.have.length(rides[0].riders.length);
   });
@@ -162,6 +160,13 @@ describe('Ride Repository', () => {
 
 describe('Ride Controller', () => {
   let ride: IRide | null;
+
+  it('Should get all active rides', async () => {
+    const activeRides = await rideController.getActiveRides();
+    expect(activeRides).to.exist;
+    expect(activeRides).to.have.length(rides.filter((r) => {return r.departureDate >= new Date() && !r.isDeleted  }).length - 1);
+  });
+
   it('Should add rider to ride', async () => {
     ride = await rideController.addRider(rides[1].id, riders[1]);
     expect(ride).to.exist;
@@ -180,4 +185,13 @@ describe('Ride Controller', () => {
     expect(newRide).to.exist;
     expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
   });
+});
+
+after('Delete all documents in all collections', async () => {
+  try {
+    await User.remove({});
+    await Ride.remove({});
+  } catch (err) {
+    console.error(err);
+  }
 });

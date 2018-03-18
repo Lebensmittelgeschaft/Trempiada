@@ -24,12 +24,8 @@ export class rideRepository {
     return ride.save();
   }
 
-  static deleteById(id: mongoose.Types.ObjectId, populate?: any) {
-    if (populate) {
-      return Ride.findByIdAndRemove(id).populate(populate);
-    }
-
-    return Ride.findByIdAndRemove(id);
+  static deleteById(id: mongoose.Types.ObjectId) {
+    return this.updateById(id, { isDeleted: true });
   }
 
   static updateById(id: mongoose.Types.ObjectId, update: any, populate?: any) {

@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import { IRide } from '../ride/ride.interface';
+import { INotification } from '../notification/notification.interface';
 
 export interface IUser extends mongoose.Document {
   id: string;
@@ -11,6 +12,6 @@ export interface IUser extends mongoose.Document {
     joinDate: Date,
   }[];
   email: string;
-  notifications: mongoose.Types.ObjectId[];
-  active: boolean;
+  notifications: INotification[];
+  isDeleted?: boolean;
 }

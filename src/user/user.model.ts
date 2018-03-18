@@ -52,9 +52,9 @@ const userSchema = new mongoose.Schema(
         required: true,
       },
     }],
-    active: {
+    isDeleted: {
       type: Boolean,
-      required: true,
+      default: false,
     },
   });
 
