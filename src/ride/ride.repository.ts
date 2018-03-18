@@ -4,7 +4,7 @@ import { Ride } from './ride.model';
 
 export class rideRepository {
 
-  static getAll(conditions?: any, select?: string, populate?: any) {
+  static getAll(conditions?: any, populate?: any, select?: string) {
     if (populate) {
       return Ride.find(conditions || {}, select || {}).populate(populate);
     }

@@ -2,151 +2,64 @@ import * as express from 'express';
 import { Ride } from './ride.model';
 import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
-import { config } from '../config';
+import { rideController } from './ride.controller';
+import { IUser } from '../user/user.interface';
 const router = express.Router();
 
-/* GET all rides. */
-router.get('/', async (req, res) => {
-  /*let rides: IRide[] = [];
-  try {
-    if (req.query.active && req.query.active === 'true') {
-      rides = await rideController.getAllBeforeDeparture();
+export default (app: express.Express) => {
+  router.put('/:id/joinRide', async (req, res, next) => {
+    if (typeof req.body.id === 'string' &&
+        typeof req.params.id === 'string') {
+      try {
+        let ride = await rideController.getRide(req.body.id);
+        if (ride) {
+          if (ride.riders.length + 1 <= ride.maxRiders) {
+            ride = await rideController.addRider(req.body.id, req.params.id);
+            if (ride) {
+              res.status(200);
+              next();
+            } else {
+              throw new Error(`Couldn't add user to the ride.`);
+            }
+          } else {
+            throw new Error(`Couldn't join a full ride.`);
+          }
+        } else {
+          throw new Error(`Couldn't find ride.`);
+        }
+      } catch (err) {
+        next(err);
+      }
     } else {
-      rides = await rideController.getAll();
+      res.sendStatus(400);
     }
+  });
 
-    res.json(rides);
-  } catch (err) {
-    res.sendStatus(500);
-  }*/
-});
-
-/* GET all rides that are yet to depart. */
-/* router.get('/active', async (req, res) => {
-  const rides = await rideController.getAllBeforeDeparture();
-  if (rides) {
-    res.json(rides);
-  } else {
-    res.sendStatus(500);
-  }
-}); */
-
-/* GET a ride. */
-router.get('/:id', async (req, res) => {
-  /*if (!req.params.id) {
-    res.sendStatus(400);
-  } else {
-    try {
-      const ride = await rideController.getById(req.params.id);
-      if (ride) {
-        res.json(ride);
-      } else {
-        res.sendStatus(404);
+  router.get('/:id/leaveRide', async (req, res, next) => {
+    if (typeof req.body.id === 'string' &&
+        typeof req.params.id === 'string') {
+      try {
+        let ride = await rideController.getRide(req.body.id);
+        if (ride) {
+          if (ride.riders.map(x => (<IUser>x.rider).id).indexOf(req.params.id) !== -1) {
+            ride = await rideController.deleteRider(req.body.id, req.params.id);
+            if (ride) {
+              res.json(200);
+              next();
+            } else {
+              throw new Error(`Couldn't remove user from the ride.`);
+            }
+          } else {
+            throw new Error(`Couldn't find user in ride.`);
+          }
+        } else {
+          throw new Error(`Couldn't find ride.`);
+        }
+      } catch (err) {
+        next(err);
       }
-    } catch (err) {
-      res.sendStatus(500);
+    } else {
+      res.sendStatus(400);
     }
-  }*/
-});
-
-/* POST a ride. */
-router.post('/', async (req, res) => {
-
-  // Checks if there's any invalid field.
-  /*if (!req.body.driver ||
-    !req.body.maxRiders ||
-    !req.body.from ||
-    !req.body.to ||
-    !req.body.departureTime) {
-    res.sendStatus(400);
-  } else {
-    try {
-      const rideToSave = new Ride({
-        driver: req.body.driver,
-        maxRiders: req.body.maxRiders,
-        riders: JSON.parse(req.body.riders),
-        from: req.body.from,
-        to: req.body.to,
-        departureTime: req.body.departureTime,
-      });
-
-      const ride = await rideController.save(rideToSave);
-      res.sendStatus(200);
-    } catch (err) {
-      res.sendStatus(500);
-    }
-  }*/
-});
-
-/* DELETE a ride. */
-router.delete('/:id', async (req, res) => {
-  /*if (!req.params.id) {
-    res.sendStatus(400);
-  } else {
-    try {
-      const ride = await rideController.deleteById(req.params.id);
-      if (ride) {
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(404);
-      }
-    } catch (err) {
-      res.sendStatus(500);
-    }
-  }*/
-});
-
-router.put('/:id', async (req, res) => {
-
-  // Checks if there's any invalid field.
-  /*if (!req.params.id ||
-    !req.body.driver ||
-    !req.body.maxRiders ||
-    !req.body.from ||
-    !req.body.to ||
-    !req.body.departureTime) {
-    res.sendStatus(400);
-  } else {
-    const rideToUpdate: Partial<IRide> = {
-      driver: req.body.driver,
-      maxRiders: req.body.maxRiders,
-      riders: JSON.parse(req.body.riders),
-      from: req.body.from,
-      to: req.body.to,
-      departureTime: req.body.departureTime,
-    };
-
-    try {
-      const ride = await rideController.updateById(req.params.id, rideToUpdate);
-      if (ride) {
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(404);
-      }
-    } catch (err) {
-      res.sendStatus(500);
-    }
-  }*/
-});
-
-router.put('/:ride/rider/:user', async (req, res) => {
-
-  // Checks if there's any invalid field.
-  /*if (!req.params.ride || !req.params.user) {
-    res.sendStatus(400);
-  } else {
-    try {
-      const ride = await rideController
-      .addRider(req.params.ride, req.params.user);
-      if (ride) {
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(404);
-      }
-    } catch (err) {
-      res.sendStatus(500);
-    }
-  }*/
-});
-
-export { router };
+  });
+}

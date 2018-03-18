@@ -101,7 +101,6 @@ describe('User Repository', () => {
       job: 'Jobnik',
       firstname: 'Bob',
       lastname: 'boB',
-      rides: [],
       email: 'Bob@bob.bob',
       notifications: [notifications[0]],
       isDeleted: false,
@@ -113,7 +112,6 @@ describe('User Repository', () => {
       job: 'BobniK',
       firstname: 'Or',
       lastname: 'Li',
-      rides: [],
       email: 'Bob@bob.bob',
       notifications: [],
       isDeleted: false,
@@ -123,7 +121,6 @@ describe('User Repository', () => {
         job: 'Bobnik',
         firstname: 'asd',
         lastname: 'dsa',
-        rides: [],
         email: 'Bob@bob.bob',
         notifications: [],
         isDeleted: false,
@@ -157,31 +154,9 @@ describe('User Controller', () => {
       console.error(err);
     }
   });
-
-  it('Should add rides to user.', async () => {
-    try {
-      await Promise.all(rides.map(async (r) => {
-        expect(await userController.addRide(driverid, r.id)).to.exist;
-      }));
-    } catch (err) {
-      console.error(err);
-    }
-  }); 
-
-  it('Should return all active rides of a user.', async () => {
-    try {
-      const user = await userController.getUserActiveRides(driverid);
-      expect(user).to.exist;
-      expect((<IUser>user).rides).to.have.length(rides.filter((r) => {
-        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
-      }).length);
-    } catch (err) {
-      console.error(err);
-    }
-  }); 
 });
 
-after('Delete all documents from all collections', async () => {
+after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});

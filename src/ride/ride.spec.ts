@@ -38,7 +38,7 @@ describe('Ride Repository', () => {
       const ridesToTest = [new Ride({
         driver: driverid,
         maxRiders: 4,
-        riders: ['22'],
+        riders: [{ rider: '22', joinDate: new Date() }],
         from: 'תל אביב',
         to: 'ראשון לציון',
         departureDate: new Date(new Date().getTime() + 100000000),
@@ -80,7 +80,6 @@ describe('Ride Repository', () => {
       job: 'Jobnik',
       firstname: 'Bob',
       lastname: 'boB',
-      rides: [],
       email: 'Bob@bob.bob',
       notifications: [],
     });
@@ -90,7 +89,6 @@ describe('Ride Repository', () => {
       job: 'BobniK',
       firstname: 'Or',
       lastname: 'Li',
-      rides: [],
       email: 'Bob@bob.bob',
       notifications: [],
       isDeleted: false,
@@ -100,7 +98,6 @@ describe('Ride Repository', () => {
         job: 'Bobnik',
         firstname: 'asd',
         lastname: 'dsa',
-        rides: [],
         email: 'Bob@bob.bob',
         notifications: [],
         isDeleted: true,
@@ -151,7 +148,10 @@ describe('Ride Repository', () => {
     expect(ride).to.have.property('maxRiders', 4);
     expect(ride).to.have.property('riders');
     expect(ride.riders).to.have.length(rides[0].riders.length);
-    expect(ride.riders[0]).to.equal(rides[0].riders[0]);
+    if (ride.riders.length > 0) {
+      expect(ride.riders[0].rider).to.equal((<IUser>rides[0].riders[0].rider).id);
+    }
+    
     expect(ride).to.have.property('from', rides[0].from);
     expect(ride).to.have.property('to', rides[0].to);
     expect(ride.departureDate.getTime()).to.equal(rides[0].departureDate.getTime());
@@ -175,13 +175,43 @@ describe('Ride Controller', () => {
 
     it('Should get rider', async () => {
       expect(await userRepository.getOneByProps(
-        { _id: (<IUser>((<IRide>ride).riders[1])).id })).to.exist;
+        { _id: (<IUser>((<IRide>ride).riders[1].rider)).id })).to.exist;
     });
   });
 
+  it('Should update ride', async () => {
+    const ride = await rideController.updateRide(rides[0].id, { maxRiders: rides[0].maxRiders - 1 });
+    expect(ride).to.exist;
+    expect(ride).to.have.property('maxRiders', rides[0].maxRiders - 1)
+  });
+
+  it('Should return all active rides of a rider.', async () => {
+    try {
+      const rides = await rideController.getRiderActiveRides(driverid);
+      expect(rides).to.exist;
+      expect(rides).to.have.length(rides.filter((r) => {
+        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
+      }).length);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  it('Should return all active rides of a driver.', async () => {
+    try {
+      const rides = await rideController.getDriverActiveRides(driverid);
+      expect(rides).to.exist;
+      expect(rides).to.have.length(rides.filter((r) => {
+        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
+      }).length);
+    } catch (err) {
+      console.error(err);
+    }
+  }); 
+
   it('Should remove rider from ride', async () => {
-    const newRide = await rideController.removeRider(rides[1].id,
-       (<IUser>(<IRide>ride).riders[0]).id);
+    const newRide = await rideController.deleteRider(rides[1].id,
+       (<IUser>(<IRide>ride).riders[0].rider).id);
     expect(newRide).to.exist;
     expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
   });

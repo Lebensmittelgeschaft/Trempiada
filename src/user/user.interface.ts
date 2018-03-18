@@ -7,10 +7,6 @@ export interface IUser extends mongoose.Document {
   job: string;
   firstname: string;
   lastname: string;
-  rides: {
-    ride: mongoose.Types.ObjectId | IRide,
-    joinDate: Date,
-  }[];
   email: string;
   notifications: INotification[];
   isDeleted?: boolean;

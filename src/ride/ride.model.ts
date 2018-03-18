@@ -12,10 +12,15 @@ const rideSchema = new mongoose.Schema({
     required: true,
   },
   riders: [{
-    type: String,
-    required: true,
-    ref: 'User',
-  }],
+    rider: {
+      type: String,
+      required: true,
+      ref: 'User',
+    joinDate: { 
+      type: Date,
+      required: true,
+    },
+  }}],
   from: {
     type: String,
     required: true,

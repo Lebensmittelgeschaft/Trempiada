@@ -4,16 +4,24 @@ import { IRide } from './ride.interface';
 
 export class rideController {
 
-  static getAllRides() {
-    return rideRepository.getAll({ isDeleted: false }, undefined, 'riders');
+  static getAllRides(select?: string) {
+    return rideRepository.getAll({ isDeleted: false }, select, 'driver riders.rider');
   }
 
-  static getActiveRides() {
-    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false }, undefined, 'driver riders');
+  static getActiveRides(select?: string) {
+    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false }, select, 'driver riders.rider');
+  }
+
+  static getRide(id: mongoose.Types.ObjectId) {
+    return rideRepository.getOneByProps({ _id: id }, 'driver riders.rider');
   }
 
   static addRide(ride: IRide) {
     return rideRepository.save(ride);
+  }
+
+  static updateRide(id: mongoose.Types.ObjectId, update: any) {
+    return rideRepository.updateById(id, update, 'driver riders.rider');
   }
 
   static deleteRide(id: mongoose.Types.ObjectId) {
@@ -22,13 +30,22 @@ export class rideController {
 
   static addRider(rideid: mongoose.Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
-                                     { $push: { riders: userid } },
-                                     [{ path: 'riders', model: 'User' }]);
+                                     { $push: { riders: { rider: userid, joinDate: new Date() } } },
+                                     'driver riders.rider');
   }
 
-  static removeRider(rideid: mongoose.Types.ObjectId, userid: string) {
+  static deleteRider(rideid: mongoose.Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
-                                     { $pull: { riders: userid } },
-                                     [{ path: 'riders', model: 'User' }]);
+                                     { $pull: { riders: { rider: userid } } },
+                                     'driver riders.rider');
+  }
+
+  static getRiderActiveRides(id: string) {
+    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false },
+      { path: 'riders.rider', model: 'User', match: { _id: id } });
+  }
+
+  static getDriverActiveRides(id: string) {
+    return rideRepository.getAll({ driver: id, departureDate: { $gte: new Date() }, isDeleted: false });
   }
 }

@@ -5,7 +5,10 @@ export interface IRide extends mongoose.Document {
   id: mongoose.Types.ObjectId;
   driver: string | IUser;
   maxRiders: number;
-  riders: string[] | IUser[];
+  riders: {
+    rider: string | IUser,
+    joinDate: Date,
+  }[];
   from: string;
   to: string;
   departureDate: Date;

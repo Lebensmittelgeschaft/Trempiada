@@ -1,36 +1,20 @@
 import * as mongoose from 'mongoose';
 import { userRepository } from './user.repository';
 import { INotification } from '../notification/notification.interface';
+import { IRide } from '../ride/ride.interface';
 
 export class userController {
 
   static getAllUsers() {
-    return userRepository.getAll({ isDeleted: false }, undefined, 'rides.ride');
+    return userRepository.getAll({ isDeleted: false });
   }
 
   static getUser(id: string) {
-    return userRepository.getOneByProps({ _id: id, isDeleted: false }, 'rides.ride');
-  }
-  
-  static async getUserActiveRides(id: string) {
-    const user = await userRepository.getOneByProps({ _id: id },
-      { path: 'rides.ride', model: 'Ride', match: { departureDate: { $gte: new Date() }, isDeleted: false } });
-    if (user) {
-      user.rides = user.rides.filter((e) => { return e.ride != null; });
-      return user;
-    }
+    return userRepository.getOneByProps({ _id: id, isDeleted: false });
   }
 
   static pushNotification(id: string, notificaiton: INotification) {
     return userRepository.updateById(id, { $push: { notificaitons: notificaiton } });
-  }
-
-  static addRide(id: string, ride: mongoose.Types.ObjectId) {
-    return userRepository.updateById(id, { $push: { rides: { ride, joinDate: new Date() } } });
-  }
-
-  static removeRide(id: string, ride: mongoose.Types.ObjectId) {
-    return userRepository.updateById(id, { $pull: { rides: { ride } } });
   }
 
   static getNotifications(id: string) {
