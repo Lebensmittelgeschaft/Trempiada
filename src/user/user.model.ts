@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IUser } from './user.interface';
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     _id: {
       type: String,
@@ -23,29 +23,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    notifications: [{
-      content: {
-        type: String,
-        required: true,
-      },
-      type: {
-        type: String,
-        required: true,
-      },
-      active: {
-        type: Boolean,
-        required: true,
-      },
-      creationDate: {
-        type: Date,
-        required: true,
-      },
-    }],
     isDeleted: {
       type: Boolean,
       default: false,
     },
   });
 
-const user = mongoose.model<IUser>('User', userSchema);
+const user = model<IUser>('User', userSchema);
 export { user as User };

@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IRide } from './ride.interface';
 
-const rideSchema = new mongoose.Schema({
+const rideSchema = new Schema({
   driver: {
     type: String,
     ref: 'User',
@@ -16,11 +16,11 @@ const rideSchema = new mongoose.Schema({
       type: String,
       required: true,
       ref: 'User',
-    joinDate: { 
-      type: Date,
-      required: true,
-    },
-  }}],
+      joinDate: { 
+        type: Date,
+        required: true,
+      },
+    }}],
   from: {
     type: String,
     required: true,
@@ -43,5 +43,5 @@ const rideSchema = new mongoose.Schema({
   },
 });
 
-const ride = mongoose.model<IRide>('Ride', rideSchema);
+const ride = model<IRide>('Ride', rideSchema);
 export { ride as Ride };

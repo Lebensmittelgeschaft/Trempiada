@@ -1,8 +1,8 @@
-import * as mongoose from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { IUser } from '../user/user.interface';
 
-export interface IRide extends mongoose.Document {
-  id: mongoose.Types.ObjectId;
+export interface IRide extends Document {
+  id: Types.ObjectId;
   driver: string | IUser;
   maxRiders: number;
   riders: {

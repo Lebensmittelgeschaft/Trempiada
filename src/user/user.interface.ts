@@ -1,13 +1,12 @@
-import * as mongoose from 'mongoose';
+import { Document } from 'mongoose';
 import { IRide } from '../ride/ride.interface';
 import { INotification } from '../notification/notification.interface';
 
-export interface IUser extends mongoose.Document {
+export interface IUser extends Document {
   id: string;
   job: string;
   firstname: string;
   lastname: string;
   email: string;
-  notifications: INotification[];
   isDeleted?: boolean;
 }

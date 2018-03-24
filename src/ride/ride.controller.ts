@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { rideRepository } from './ride.repository';
 import { IRide } from './ride.interface';
 
@@ -9,10 +9,13 @@ export class rideController {
   }
 
   static getActiveRides(select?: string) {
-    return rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false }, select, 'driver riders.rider');
+    return rideRepository.getAll({ 
+      departureDate: { $gte: new Date() },
+      isDeleted: false,
+    }, select, 'driver riders.rider');
   }
 
-  static getRide(id: mongoose.Types.ObjectId) {
+  static getRide(id: Types.ObjectId) {
     return rideRepository.getOneByProps({ _id: id }, 'driver riders.rider');
   }
 
@@ -20,46 +23,53 @@ export class rideController {
     return rideRepository.save(ride);
   }
 
-  static updateRide(id: mongoose.Types.ObjectId, update: any) {
+  static updateRide(id: Types.ObjectId, update: any) {
     return rideRepository.updateById(id, update, 'driver riders.rider');
   }
 
-  static deleteRide(id: mongoose.Types.ObjectId) {
+  static deleteRide(id: Types.ObjectId) {
     return rideRepository.deleteById(id);
   }
 
-  static addRider(rideid: mongoose.Types.ObjectId, userid: string) {
+  static addRider(rideid: Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $push: { riders: { rider: userid, joinDate: new Date() } } },
                                      'driver riders.rider');
   }
 
-  static deleteRider(rideid: mongoose.Types.ObjectId, userid: string) {
+  static deleteRider(rideid: Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $pull: { riders: { rider: userid } } },
                                      'driver riders.rider');
   }
 
   static async getRiderActiveRides(id: string) {
-    let rides = await rideRepository.getAll({ departureDate: { $gte: new Date() }, isDeleted: false },
-      { path: 'riders.rider', model: 'User', match: { _id: id } });
+    let rides = await rideRepository.getAll({
+      departureDate: { $gte: new Date() }, isDeleted: false,
+    }, { path: 'riders.rider', model: 'User', match: { _id: id } });
+
     if (rides) {
       rides = rides.filter((r) => {
         return r.riders.filter((rider) => {
-           return rider.rider != null;
-        }).length > 0;});
+          return rider.rider != null;
+        }).length > 0;
+      });
     }
 
     return rides;
   }
 
   static async getDriverActiveRides(id: string) {
-    let rides = await rideRepository.getAll({ driver: id, departureDate: { $gte: new Date() }, isDeleted: false });
+    let rides = await rideRepository.getAll({
+      driver: id, departureDate: { $gte: new Date() }, isDeleted: false,
+    });
+
     if (rides) {
       rides = rides.filter((r) => {
         return r.riders.filter((rider) => {
-           return rider.rider != null;
-        }).length > 0;});
+          return rider.rider != null;
+        }).length > 0;
+      });
     }
 
     return rides;

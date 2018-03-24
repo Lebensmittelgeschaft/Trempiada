@@ -1,10 +1,9 @@
-import * as mongoose from 'mongoose';
 import { User } from './user.model';
 import { IUser } from './user.interface';
 
 export class userRepository {
   
-  static getAll(conditions?: any, select?: string, populate?: any) {
+  static getAll(conditions?: any, populate?: any, select?: string) {
     if (populate) {
       return User.find(conditions || {}, select || {}).populate(populate);
     }

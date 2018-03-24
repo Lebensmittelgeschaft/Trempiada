@@ -9,7 +9,7 @@ import { Ride } from '../ride/ride.model';
 import { IRide } from '../ride/ride.interface';
 import { rideRepository } from '../ride/ride.repository';
 import { userController } from './user.controller';
-import { INotification } from '../notification/notification.interface';
+import { Notification } from '../notification/notification.model';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -22,23 +22,12 @@ mongoose.connect(config.mongodbUrl, (err) => {
 
 const driverid = '10';
 const rides: IRide[] = [];
-const notifications: INotification[] = [{
-  type: 'Alert',
-  content: 'TEST',
-  active: true,
-  creationDate: new Date(),
-},
-  {
-    type: 'Alert',
-    content: 'TEST2',
-    active: false,
-    creationDate: new Date(),
-  }];
 
 before('Clear users test DB.', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
+    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }
@@ -102,7 +91,6 @@ describe('User Repository', () => {
       firstname: 'Bob',
       lastname: 'boB',
       email: 'Bob@bob.bob',
-      notifications: [notifications[0]],
       isDeleted: false,
     });
 
@@ -113,7 +101,6 @@ describe('User Repository', () => {
       firstname: 'Or',
       lastname: 'Li',
       email: 'Bob@bob.bob',
-      notifications: [],
       isDeleted: false,
     }),
       new User({
@@ -122,7 +109,6 @@ describe('User Repository', () => {
         firstname: 'asd',
         lastname: 'dsa',
         email: 'Bob@bob.bob',
-        notifications: [],
         isDeleted: false,
       })];
     try {
@@ -139,17 +125,7 @@ describe('User Repository', () => {
 describe('User Controller', () => {
   it('Should give all users', async () => {
     try {
-      const users = await userController.getAllUsers();
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-  it('Should create notifications.', async () => {
-    try {
-      await Promise.all(notifications.map(async (n) => {
-        expect(await userController.pushNotification('2', notifications[1])).to.exist;
-      }));
+      const users = await userController.getAll();
     } catch (err) {
       console.error(err);
     }
@@ -160,6 +136,7 @@ after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
+    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }

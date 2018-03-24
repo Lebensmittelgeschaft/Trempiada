@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { IRide } from './ride.interface';
 import { Ride } from './ride.model';
 
@@ -24,11 +24,11 @@ export class rideRepository {
     return ride.save();
   }
 
-  static deleteById(id: mongoose.Types.ObjectId) {
+  static deleteById(id: Types.ObjectId) {
     return this.updateById(id, { isDeleted: true });
   }
 
-  static updateById(id: mongoose.Types.ObjectId, update: any, populate?: any) {
+  static updateById(id: Types.ObjectId, update: any, populate?: any) {
     if (populate) {
       return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate);
     }

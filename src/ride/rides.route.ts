@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { Ride } from './ride.model';
-import * as mongoose from 'mongoose';
 import { IRide } from './ride.interface';
 import { rideController } from './ride.controller';
 import { IUser } from '../user/user.interface';
@@ -62,4 +61,4 @@ export default (app: express.Express) => {
       res.sendStatus(400);
     }
   });
-}
+};

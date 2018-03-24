@@ -1,5 +1,5 @@
 import 'mocha';
-import * as chai from 'chai';
+import { expect } from 'chai';
 import { Ride } from './ride.model';
 import { IRide } from './ride.interface';
 import * as mongoose from 'mongoose';
@@ -9,6 +9,7 @@ import { userRepository } from '../user/user.repository';
 import { User } from '../user/user.model';
 import { IUser } from '../user/user.interface';
 import { rideController } from './ride.controller';
+import { Notification } from '../notification/notification.model';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -19,7 +20,6 @@ mongoose.connect(config.mongodbUrl, (err) => {
   }
 });
 
-const expect = chai.expect;
 const driverid = '21';
 const riders: string[] = [];
 const rides: IRide[] = [];
@@ -27,6 +27,7 @@ before('Clear rides DB.', async () => {
   try {
     await Ride.remove({});
     await User.remove({});
+    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }
@@ -164,7 +165,8 @@ describe('Ride Controller', () => {
   it('Should get all active rides', async () => {
     const activeRides = await rideController.getActiveRides();
     expect(activeRides).to.exist;
-    expect(activeRides).to.have.length(rides.filter((r) => {return r.departureDate >= new Date() && !r.isDeleted  }).length - 1);
+    expect(activeRides).to.have.length(rides.filter(
+      r => r.departureDate >= new Date() && !r.isDeleted).length - 1);
   });
 
   it('Should add rider to ride', async () => {
@@ -180,18 +182,18 @@ describe('Ride Controller', () => {
   });
 
   it('Should update ride', async () => {
-    const ride = await rideController.updateRide(rides[0].id, { maxRiders: rides[0].maxRiders - 1 });
+    const ride = await rideController.updateRide(
+      rides[0].id, { maxRiders: rides[0].maxRiders - 1 });
     expect(ride).to.exist;
-    expect(ride).to.have.property('maxRiders', rides[0].maxRiders - 1)
+    expect(ride).to.have.property('maxRiders', rides[0].maxRiders - 1);
   });
 
   it('Should return all active rides of a rider.', async () => {
     try {
       const rides = await rideController.getRiderActiveRides(riders[2]);
-      console.log(rides);
       expect(rides).to.exist;
       expect(rides).to.have.length(rides.filter((r) => {
-        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
+        return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
       }).length);
     } catch (err) {
       console.error(err);
@@ -203,7 +205,7 @@ describe('Ride Controller', () => {
       const rides = await rideController.getDriverActiveRides(driverid);
       expect(rides).to.exist;
       expect(rides).to.have.length(rides.filter((r) => {
-        return r.driver == driverid && r.departureDate >= new Date() && !r.isDeleted;
+        return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
       }).length);
     } catch (err) {
       console.error(err);
@@ -222,6 +224,7 @@ after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
+    await Notification.remove({});
   } catch (err) {
     console.error(err);
   }
