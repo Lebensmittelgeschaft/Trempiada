@@ -18,7 +18,7 @@ mongoose.connect(config.mongodbUrl, (err) => {
   }
 });
 
-/*before('Clear users test DB.', async () => {
+before('Clear users test DB.', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
@@ -26,7 +26,7 @@ mongoose.connect(config.mongodbUrl, (err) => {
   } catch (err) {
     console.error(err);
   }
-});*/
+});
 
 const userid = '16';
 const testUser = new User({
@@ -49,7 +49,7 @@ const notifications: INotification[] = [
     creationDate: new Date(),
   })];
 
-/*after('Delete all documents in all collections', async () => {
+after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
@@ -57,5 +57,5 @@ const notifications: INotification[] = [
   } catch (err) {
     console.error(err);
   }
-});*/
+});
 

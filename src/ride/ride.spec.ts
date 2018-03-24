@@ -23,6 +23,7 @@ mongoose.connect(config.mongodbUrl, (err) => {
 const driverid = '21';
 const riders: string[] = [];
 const rides: IRide[] = [];
+
 before('Clear rides DB.', async () => {
   try {
     await Ride.remove({});
@@ -35,44 +36,40 @@ before('Clear rides DB.', async () => {
 
 describe('Ride Repository', () => {
   it('Should create test rides.', async () => {
-    try {
-      const ridesToTest = [new Ride({
+    const ridesToTest = [new Ride({
+      driver: driverid,
+      maxRiders: 4,
+      riders: [{ rider: '22', joinDate: new Date() }],
+      from: 'תל אביב',
+      to: 'ראשון לציון',
+      departureDate: new Date(new Date().getTime() + 100000000),
+      creationDate: new Date(),
+      isDeleted: false,
+    }),
+      new Ride({
         driver: driverid,
         maxRiders: 4,
-        riders: [{ rider: '22', joinDate: new Date() }],
+        riders: [],
         from: 'תל אביב',
         to: 'ראשון לציון',
         departureDate: new Date(new Date().getTime() + 100000000),
         creationDate: new Date(),
-        isDeleted: false,
       }),
-        new Ride({
-          driver: driverid,
-          maxRiders: 4,
-          riders: [],
-          from: 'תל אביב',
-          to: 'ראשון לציון',
-          departureDate: new Date(new Date().getTime() + 100000000),
-          creationDate: new Date(),
-        }),
-        new Ride({
-          driver: driverid,
-          maxRiders: 4,
-          riders: [],
-          from: 'תל אביב',
-          to: 'ראשון לציון',
-          departureDate: new Date(new Date().getTime() - 100000000),
-          creationDate: new Date(),
-          isDeleted: false,
-        })];
-      await Promise.all(ridesToTest.map(async (r) => {
-        const ride = await rideRepository.save(r);
-        expect(ride).to.exist;
-        rides.push(ride);
-      }));
-    } catch (err) {
-      console.error(err);
-    }
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(new Date().getTime() - 100000000),
+        creationDate: new Date(),
+        isDeleted: false,
+      })];
+    await Promise.all(ridesToTest.map(async (r) => {
+      const ride = await rideRepository.save(r);
+      expect(ride).to.exist;
+      rides.push(ride);
+    }));
   });
 
   it('Should create test users.', async () => {
@@ -189,27 +186,19 @@ describe('Ride Controller', () => {
   });
 
   it('Should return all active rides of a rider.', async () => {
-    try {
-      const rides = await rideController.getRiderActiveRides(riders[2]);
-      expect(rides).to.exist;
-      expect(rides).to.have.length(rides.filter((r) => {
-        return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
-      }).length);
-    } catch (err) {
-      console.error(err);
-    }
+    const rides = await rideController.getRiderActiveRides(riders[2]);
+    expect(rides).to.exist;
+    expect(rides).to.have.length(rides.filter((r) => {
+      return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
+    }).length);
   });
 
   it('Should return all active rides of a driver.', async () => {
-    try {
-      const rides = await rideController.getDriverActiveRides(driverid);
-      expect(rides).to.exist;
-      expect(rides).to.have.length(rides.filter((r) => {
-        return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
-      }).length);
-    } catch (err) {
-      console.error(err);
-    }
+    const rides = await rideController.getDriverActiveRides(driverid);
+    expect(rides).to.exist;
+    expect(rides).to.have.length(rides.filter((r) => {
+      return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
+    }).length);
   }); 
 
   it('Should remove rider from ride', async () => {

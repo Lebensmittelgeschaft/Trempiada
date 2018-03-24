@@ -35,11 +35,7 @@ before('Clear users test DB.', async () => {
 
 describe('User Repository', () => {
   it('Should give all users.', async () => {
-    try {
-      expect(await userRepository.getAll()).to.exist;
-    } catch (err) {
-      console.error(err);
-    }
+    expect(await userRepository.getAll()).to.exist;
   });
   
   it('Should create test rides.', async () => {
@@ -73,15 +69,11 @@ describe('User Repository', () => {
         creationDate: new Date(),
         isDeleted: false,
       })];
-    try {
-      await Promise.all(ridesToTest.map(async (r) => {
-        const ride = await rideRepository.save(r);
-        expect(ride).to.exist;
-        rides.push(ride);
-      }));
-    } catch (err) {
-      console.error(err);
-    }
+    await Promise.all(ridesToTest.map(async (r) => {
+      const ride = await rideRepository.save(r);
+      expect(ride).to.exist;
+      rides.push(ride);
+    }));
   });
 
   it('Should create users.', async () => {
@@ -111,24 +103,16 @@ describe('User Repository', () => {
         email: 'Bob@bob.bob',
         isDeleted: false,
       })];
-    try {
-      await Promise.all(ridersToTest.map(async (u) => {
-        const rider = await userRepository.save(u);
-        expect(rider).to.exist;
-      }));
-    } catch (err) {
-      console.error(err);
-    }
+    await Promise.all(ridersToTest.map(async (u) => {
+      const rider = await userRepository.save(u);
+      expect(rider).to.exist;
+    }));
   });
 });
 
 describe('User Controller', () => {
   it('Should give all users', async () => {
-    try {
-      const users = await userController.getAll();
-    } catch (err) {
-      console.error(err);
-    }
+    expect(await userController.getAll()).to.exist;
   });
 });
 
