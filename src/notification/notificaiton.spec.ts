@@ -8,6 +8,7 @@ import { Notification } from './notification.model';
 import { INotification } from './notification.interface';
 import { IUser } from '../user/user.interface';
 import { notificationRepository } from './notification.repository';
+import { userRepository } from '../user/user.repository';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -30,7 +31,7 @@ before('Clear users test DB.', async () => {
 
 const userid = '16';
 const testUser = new User({
-  id: userid,
+  _id: userid,
   firstname: 'Omri',
   lastname: 'S',
   job: 'toch',
@@ -48,6 +49,18 @@ const notifications: INotification[] = [
     content: 'TEST2',
     creationDate: new Date(),
   })];
+
+describe('Notification repository', () => {
+  it('Should save test user', async () => {
+    expect(await userRepository.save(testUser)).to.exist;
+  });
+
+  it('Should save notifications', async () => {
+    await Promise.all(notifications.map(async (n) => {
+      expect(await notificationRepository.save(n)).to.exist;
+    }));
+  });
+});
 
 after('Delete all documents in all collections', async () => {
   try {
