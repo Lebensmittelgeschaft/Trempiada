@@ -4,7 +4,22 @@ import { IUser } from './user.interface';
 import { userController } from './user.controller';
 const router = express.Router();
 
-export function userRouter() {
+router.get('/', async (req, res, next) => {
+  try {
+    res.json(await userController.getAll());
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
-  return router;
-}
+router.get('/:id', async (req, res, next) => {
+  try {
+    res.json(await userController.getById(req.params.id));
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+export { router as userRouter };

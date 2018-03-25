@@ -29,9 +29,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', router());
-app.use('/user', userRouter());
-app.use('/ride', rideRouter());
+app.use('/', router);
+app.use('/user', userRouter);
+app.use('/ride', rideRouter);
+
+// Error handler.
+app.use((err,req,res,next) => {
+  if (process.env.NODE_ENV === 'dev') console.error(err);
+  if (err.name === 'ValidationError' || err.name === 'CastError' ||
+     (err.name === 'MongoError' && err.code === 11000)) res.sendStatus(400);
+  else res.sendStatus(500);
+});
 
 const server = app.listen(parseInt(<string>config.port), () => {
   console.log(`Server listening on port ${server.address().port}`);

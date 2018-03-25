@@ -44,5 +44,13 @@ const rideSchema = new Schema({
   },
 });
 
+rideSchema.pre('validate', function (this: IRide, next) {
+  if (this.riders.length <= this.maxRiders) {
+    next();
+  }
+
+  next(new Error(`Ride is full.`));
+});
+
 const ride = model<IRide>('Ride', rideSchema);
 export { ride as Ride };
