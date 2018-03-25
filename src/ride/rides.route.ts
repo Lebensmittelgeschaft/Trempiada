@@ -5,17 +5,36 @@ import { rideController } from './ride.controller';
 import { IUser } from '../user/user.interface';
 const router = express.Router();
 
-export default (app: express.Express) => {
-  router.put('/:id/joinRide', async (req, res, next) => {
+export function rideRouter() {
+
+  router.get('/', async (req, res, next) => {
+    try {
+      res.json(await rideController.getAll());
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.put('/cancel/:id', async (req, res, next) => {
+    try {
+      res.sendStatus(200);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.put('/joinRide/:id', async (req, res, next) => {
     if (typeof req.body.id === 'string' &&
         typeof req.params.id === 'string') {
       try {
-        let ride = await rideController.getRide(req.body.id);
+        let ride = await rideController.getById(req.body.id);
         if (ride) {
           if (ride.riders.length + 1 <= ride.maxRiders) {
             ride = await rideController.addRider(req.body.id, req.params.id);
             if (ride) {
-              res.status(200);
+              res.sendStatus(200);
               next();
             } else {
               throw new Error(`Couldn't add user to the ride.`);
@@ -34,16 +53,16 @@ export default (app: express.Express) => {
     }
   });
 
-  router.get('/:id/leaveRide', async (req, res, next) => {
+  router.put('/leaveRide/:id', async (req, res, next) => {
     if (typeof req.body.id === 'string' &&
         typeof req.params.id === 'string') {
       try {
-        let ride = await rideController.getRide(req.body.id);
+        let ride = await rideController.getById(req.body.id);
         if (ride) {
           if (ride.riders.map(x => (<IUser>x.rider).id).indexOf(req.params.id) !== -1) {
             ride = await rideController.deleteRider(req.body.id, req.params.id);
             if (ride) {
-              res.json(200);
+              res.sendStatus(200);
               next();
             } else {
               throw new Error(`Couldn't remove user from the ride.`);
@@ -61,4 +80,6 @@ export default (app: express.Express) => {
       res.sendStatus(400);
     }
   });
-};
+
+  return router;
+}

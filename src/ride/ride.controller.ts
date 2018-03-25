@@ -1,34 +1,48 @@
 import { Types } from 'mongoose';
 import { rideRepository } from './ride.repository';
 import { IRide } from './ride.interface';
+import { notificationController } from '../notification/notification.controller';
+import { Notification } from '../notification/notification.model';
+import { IUser } from '../user/user.interface';
 
 export class rideController {
 
-  static getAllRides(select?: string) {
-    return rideRepository.getAll({ isDeleted: false }, select, 'driver riders.rider');
-  }
-
-  static getActiveRides(select?: string) {
-    return rideRepository.getAll({ 
+  static getAll(select?: string) {
+    return rideRepository.getAll({
       departureDate: { $gte: new Date() },
       isDeleted: false,
     }, select, 'driver riders.rider');
   }
 
-  static getRide(id: Types.ObjectId) {
-    return rideRepository.getOneByProps({ _id: id }, 'driver riders.rider');
+  static getById(id: Types.ObjectId, select?: string) {
+    return rideRepository.getOneByProps({ _id: id }, 'driver riders.rider', select);
   }
 
-  static addRide(ride: IRide) {
+  static save(ride: IRide) {
     return rideRepository.save(ride);
   }
 
-  static updateRide(id: Types.ObjectId, update: any) {
+  static updateById(id: Types.ObjectId, update: any) {
     return rideRepository.updateById(id, update, 'driver riders.rider');
   }
 
-  static deleteRide(id: Types.ObjectId) {
+  static deleteById(id: Types.ObjectId) {
     return rideRepository.deleteById(id);
+  }
+
+  static async cancelRide(id: Types.ObjectId) {
+    const ride = await this.getById(id);
+    if (ride) {
+      await this.deleteById(id);
+      await Promise.all(ride.riders.map(r => <IUser>r.rider).map(async (rider) => {
+        await notificationController.save(new Notification({
+          user: rider.id,
+          content: `נסיעתך מ ${ride.from} אל ${ride.to}
+            בשעה ${ride.departureDate} בוטלה על ידי הנהג.`,
+          creationDate: new Date(),
+        }));
+      }));
+    }
   }
 
   static addRider(rideid: Types.ObjectId, userid: string) {

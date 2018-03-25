@@ -6,7 +6,8 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as http from 'http';
 import * as mongoose from 'mongoose';
-import { getRoutes as router } from './router';
+import { router } from './router';
+import { rideRouter } from './ride/rides.route';
 import { config } from './config';
 
 (<any>mongoose).Promise = Promise;
@@ -27,7 +28,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-router(app);
+app.use('/', router());
+app.use('/ride', rideRouter());
 
 const server = app.listen(parseInt(<string>config.port), () => {
   console.log(`Server listening on port ${server.address().port}`);

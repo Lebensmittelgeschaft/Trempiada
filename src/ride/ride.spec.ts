@@ -160,7 +160,7 @@ describe('Ride Controller', () => {
   let ride: IRide | null;
 
   it('Should get all active rides', async () => {
-    const activeRides = await rideController.getActiveRides();
+    const activeRides = await rideController.getAll();
     expect(activeRides).to.exist;
     expect(activeRides).to.have.length(rides.filter(
       r => r.departureDate >= new Date() && !r.isDeleted).length - 1);
@@ -179,7 +179,7 @@ describe('Ride Controller', () => {
   });
 
   it('Should update ride', async () => {
-    const ride = await rideController.updateRide(
+    const ride = await rideController.updateById(
       rides[0].id, { maxRiders: rides[0].maxRiders - 1 });
     expect(ride).to.exist;
     expect(ride).to.have.property('maxRiders', rides[0].maxRiders - 1);

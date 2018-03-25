@@ -11,7 +11,8 @@ const devConfig = {
 };
 
 const testConfig = {
-  mongodbUrl: `mongodb://test:test@ds035059.mlab.com:35059/the_hitchhikers_guide_to_the_galaxy`,
+  mongodbUrl: `mongodb://test:test@ds121889.mlab.com:21889/trempdb_test` ||
+              `mongodb://test:test@ds035059.mlab.com:35059/the_hitchhikers_guide_to_the_galaxy`,
   port: process.env.PORT || 3000,
 };
 

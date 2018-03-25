@@ -8,11 +8,11 @@ export class notificationController {
   }
 
   static getAll() {
-    return notificationRepository.getAll({}, 'user');
+    return notificationRepository.getAll({ isRead: false }, 'user');
   }
 
   static getById(id: Types.ObjectId) {
-    return notificationRepository.getOneByProps({ _id: id }, 'user');
+    return notificationRepository.getOneByProps({ _id: id, isRead: false }, 'user');
   }
 
   static deleteById(id: Types.ObjectId) {
@@ -21,5 +21,9 @@ export class notificationController {
 
   static updateById(id: Types.ObjectId, update: any) {
     return notificationController.updateById(id, update);
+  }
+
+  static getUserNotifications(id: string) {
+    return notificationRepository.getAll({ user: id, isRead: false });
   }
 }

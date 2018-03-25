@@ -38,7 +38,7 @@ const testUser = new User({
   email: 'as@dd.werz',
 });
 
-const notifications: INotification[] = [
+const notifications = [
   new Notification({
     user: userid,
     content: 'TEST',
