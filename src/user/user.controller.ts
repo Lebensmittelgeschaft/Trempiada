@@ -10,7 +10,7 @@ export class userController {
   }
 
   static getById(id: string) {
-    return userRepository.getOneByProps({ _id: id, isDeleted: false });
+    return userRepository.getOneByProps({ _id: id });
   }
 
   static save(user: IUser) {

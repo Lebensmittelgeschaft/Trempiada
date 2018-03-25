@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { INotification } from './notification.interface';
 import { Notification } from './notification.model';
+import { User } from '../user/user.model';
 
 export class notificationRepository {
   static getAll(conditions?: any, populate?: any, select?: string) {

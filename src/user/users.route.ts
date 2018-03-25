@@ -3,3 +3,8 @@ import { User } from './user.model';
 import { IUser } from './user.interface';
 import { userController } from './user.controller';
 const router = express.Router();
+
+export function userRouter() {
+
+  return router;
+}

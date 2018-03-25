@@ -1,3 +1,4 @@
+import * as mongoose from 'mongoose';
 import * as express from 'express';
 import * as path from 'path';
 import * as favicon from 'serve-favicon';
@@ -5,8 +6,8 @@ import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as http from 'http';
-import * as mongoose from 'mongoose';
 import { router } from './router';
+import { userRouter } from './user/users.route';
 import { rideRouter } from './ride/rides.route';
 import { config } from './config';
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', router());
+app.use('/user', userRouter());
 app.use('/ride', rideRouter());
 
 const server = app.listen(parseInt(<string>config.port), () => {

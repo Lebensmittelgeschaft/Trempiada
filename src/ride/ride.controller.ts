@@ -4,6 +4,7 @@ import { IRide } from './ride.interface';
 import { notificationController } from '../notification/notification.controller';
 import { Notification } from '../notification/notification.model';
 import { IUser } from '../user/user.interface';
+import { User } from '../user/user.model';
 
 export class rideController {
 
@@ -11,11 +12,12 @@ export class rideController {
     return rideRepository.getAll({
       departureDate: { $gte: new Date() },
       isDeleted: false,
-    }, select, 'driver riders.rider');
+    }, { path: 'driver riders.rider', model: User }, select);
   }
 
   static getById(id: Types.ObjectId, select?: string) {
-    return rideRepository.getOneByProps({ _id: id }, 'driver riders.rider', select);
+    return rideRepository.getOneByProps({ _id: id },
+      { path: 'driver riders.rider', model: User }, select);
   }
 
   static save(ride: IRide) {
@@ -23,7 +25,7 @@ export class rideController {
   }
 
   static updateById(id: Types.ObjectId, update: any) {
-    return rideRepository.updateById(id, update, 'driver riders.rider');
+    return rideRepository.updateById(id, update, { path: 'driver riders.rider', model: User });
   }
 
   static deleteById(id: Types.ObjectId) {
@@ -48,19 +50,19 @@ export class rideController {
   static addRider(rideid: Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $push: { riders: { rider: userid, joinDate: new Date() } } },
-                                     'driver riders.rider');
+                                     { path: 'driver riders.rider', model: User });
   }
 
   static deleteRider(rideid: Types.ObjectId, userid: string) {
     return rideRepository.updateById(rideid,
                                      { $pull: { riders: { rider: userid } } },
-                                     'driver riders.rider');
+                                     { path: 'driver riders.rider', model: User });
   }
 
   static async getRiderActiveRides(id: string) {
     let rides = await rideRepository.getAll({
       departureDate: { $gte: new Date() }, isDeleted: false,
-    }, { path: 'riders.rider', model: 'User', match: { _id: id } });
+    }, { path: 'riders.rider', model: User, match: { _id: id } });
 
     if (rides) {
       rides = rides.filter((r) => {

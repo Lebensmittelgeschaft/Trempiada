@@ -123,7 +123,7 @@ describe('Ride Repository', () => {
 
   it('Should find ride', async () => {
     const ride = await rideRepository.getOneByProps(
-      { _id: rides[0].id }, { path: 'riders', model: 'User' });
+      { _id: rides[0].id }, 'riders');
     expect(ride).to.exist;
     expect((<IRide>ride).id).to.equal(rides[0].id);
     expect(ride).to.have.property('driver', rides[0].driver);
@@ -201,15 +201,15 @@ describe('Ride Controller', () => {
     }).length);
   }); 
 
-  it('Should remove rider from ride', async () => {
+  /*it('Should remove rider from ride', async () => {
     const newRide = await rideController.deleteRider(rides[1].id,
        (<string>(<IRide>ride).riders[0].rider));
     expect(newRide).to.exist;
     expect((<IRide>newRide).riders).to.have.length(rides[1].riders.length);
-  });
+  });*/
 });
 
-after('Delete all documents in all collections', async () => {
+/*after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
@@ -217,4 +217,4 @@ after('Delete all documents in all collections', async () => {
   } catch (err) {
     console.error(err);
   }
-});
+});*/

@@ -16,11 +16,12 @@ const rideSchema = new Schema({
       type: String,
       required: true,
       ref: 'User',
-      joinDate: { 
-        type: Date,
-        required: true,
-      },
-    }}],
+    },
+    joinDate: { 
+      type: Date,
+      required: true,
+    },
+  }],
   from: {
     type: String,
     required: true,

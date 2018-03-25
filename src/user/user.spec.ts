@@ -116,7 +116,7 @@ describe('User Controller', () => {
   });
 });
 
-after('Delete all documents in all collections', async () => {
+/*after('Delete all documents in all collections', async () => {
   try {
     await User.remove({});
     await Ride.remove({});
@@ -124,4 +124,4 @@ after('Delete all documents in all collections', async () => {
   } catch (err) {
     console.error(err);
   }
-});
+});*/

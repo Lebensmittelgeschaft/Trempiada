@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { notificationRepository } from './notification.repository';
 import { INotification } from './notification.interface';
+import { User } from '../user/user.model';
 
 export class notificationController {
   static save(notificaiton: INotification) {
@@ -8,11 +9,12 @@ export class notificationController {
   }
 
   static getAll() {
-    return notificationRepository.getAll({ isRead: false }, 'user');
+    return notificationRepository.getAll({ isRead: false }, { path: 'user', model: User });
   }
 
   static getById(id: Types.ObjectId) {
-    return notificationRepository.getOneByProps({ _id: id, isRead: false }, 'user');
+    return notificationRepository.getOneByProps({ _id: id, isRead: false },
+      { path: 'user', model: User });
   }
 
   static deleteById(id: Types.ObjectId) {

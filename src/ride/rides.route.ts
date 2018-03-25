@@ -16,7 +16,16 @@ export function rideRouter() {
     }
   });
 
-  router.put('/cancel/:id', async (req, res, next) => {
+  router.get('/:id', async (req, res, next) => {
+    try {
+      res.json(await rideController.getById(req.params.id));
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.put('/:id/cancel', async (req, res, next) => {
     try {
       res.sendStatus(200);
       next();
@@ -25,59 +34,49 @@ export function rideRouter() {
     }
   });
 
-  router.put('/joinRide/:id', async (req, res, next) => {
-    if (typeof req.body.id === 'string' &&
-        typeof req.params.id === 'string') {
-      try {
-        let ride = await rideController.getById(req.body.id);
-        if (ride) {
-          if (ride.riders.length + 1 <= ride.maxRiders) {
-            ride = await rideController.addRider(req.body.id, req.params.id);
-            if (ride) {
-              res.sendStatus(200);
-              next();
-            } else {
-              throw new Error(`Couldn't add user to the ride.`);
-            }
+  router.put('/:id/joinRide', async (req, res, next) => {
+    try {
+      let ride = await rideController.getById(req.params.id);
+      if (ride) {
+        if (ride.riders.length + 1 <= ride.maxRiders) {
+          ride = await rideController.addRider(req.params.id, req.body.user);
+          if (ride) {
+            res.sendStatus(200);
+            next();
           } else {
-            throw new Error(`Couldn't join a full ride.`);
+            throw new Error(`Couldn't add user to the ride.`);
           }
         } else {
-          throw new Error(`Couldn't find ride.`);
+          throw new Error(`Couldn't join a full ride.`);
         }
-      } catch (err) {
-        next(err);
+      } else {
+        throw new Error(`Couldn't find ride.`);
       }
-    } else {
-      res.sendStatus(400);
+    } catch (err) {
+      next(err);
     }
   });
 
-  router.put('/leaveRide/:id', async (req, res, next) => {
-    if (typeof req.body.id === 'string' &&
-        typeof req.params.id === 'string') {
-      try {
-        let ride = await rideController.getById(req.body.id);
-        if (ride) {
-          if (ride.riders.map(x => (<IUser>x.rider).id).indexOf(req.params.id) !== -1) {
-            ride = await rideController.deleteRider(req.body.id, req.params.id);
-            if (ride) {
-              res.sendStatus(200);
-              next();
-            } else {
-              throw new Error(`Couldn't remove user from the ride.`);
-            }
+  router.put('/:id/leaveRide', async (req, res, next) => {
+    try {
+      let ride = await rideController.getById(req.params.id);
+      if (ride) {
+        if (ride.riders.map(x => (<IUser>x.rider).id).indexOf(req.body.user) !== -1) {
+          ride = await rideController.deleteRider(req.params.id, req.body.user);
+          if (ride) {
+            res.sendStatus(200);
+            next();
           } else {
-            throw new Error(`Couldn't find user in ride.`);
+            throw new Error(`Couldn't remove user from the ride.`);
           }
         } else {
-          throw new Error(`Couldn't find ride.`);
+          throw new Error(`Couldn't find user in ride.`);
         }
-      } catch (err) {
-        next(err);
+      } else {
+        throw new Error(`Couldn't find ride.`);
       }
-    } else {
-      res.sendStatus(400);
+    } catch (err) {
+      next(err);
     }
   });
 
