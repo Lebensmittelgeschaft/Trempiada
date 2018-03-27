@@ -21,6 +21,7 @@ const rideSchema = new Schema({
       type: Date,
       required: true,
     },
+    default: [],
   }],
   from: {
     type: String,
@@ -36,7 +37,6 @@ const rideSchema = new Schema({
   },
   creationDate: {
     type: Date,
-    required: true,
   },
   isDeleted: {
     type: Boolean,
@@ -50,6 +50,10 @@ rideSchema.pre('validate', function (this: IRide, next) {
   }
 
   next(new Error(`Ride is full.`));
+});
+
+rideSchema.pre('save', function (this: IRide, next) {
+  this.creationDate = new Date();
 });
 
 const ride = model<IRide>('Ride', rideSchema);

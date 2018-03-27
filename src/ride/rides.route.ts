@@ -23,6 +23,36 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+router.post('/', async (req, res, next) => {
+  try {
+    const ride = await rideController.save(new Ride({
+      driver: req.body.driver,
+      maxRiders: req.body.maxRiders,
+      from: req.body.from,
+      to: req.body.to,
+      departureDate: req.body.departureDate,
+    }));
+    res.json(ride);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/:id', async (req, res, next) => {
+  try {
+    const ride = await rideController.updateById(req.params.id, new Ride({
+      from: req.body.from,
+      to: req.body.to,
+      departureDate: req.body.departureDate,
+    }));
+    res.json(ride);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.put('/:id/cancel', async (req, res, next) => {
   try {
     await rideController.cancelRide(req.params.id);
