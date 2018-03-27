@@ -4,8 +4,8 @@ import { Ride } from './ride.model';
 import { IRide } from './ride.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
-import { rideRepository } from './ride.repository';
-import { userRepository } from '../user/user.repository';
+import { rideService } from './ride.service';
+import { userService } from '../user/user.service';
 import { User } from '../user/user.model';
 import { IUser } from '../user/user.interface';
 import { rideController } from './ride.controller';
@@ -66,7 +66,7 @@ describe('Ride Repository', () => {
         isDeleted: false,
       })];
     await Promise.all(ridesToTest.map(async (r) => {
-      const ride = await rideRepository.save(r);
+      const ride = await rideService.save(r);
       expect(ride).to.exist;
       rides.push(ride);
     }));
@@ -101,28 +101,28 @@ describe('Ride Repository', () => {
         isDeleted: true,
       })];
 
-    expect(await userRepository.save(driver)).to.exist;
+    expect(await userService.save(driver)).to.exist;
     await Promise.all(ridersToTest.map(async (u) => {
-      const rider = await userRepository.save(u);
+      const rider = await userService.save(u);
       expect(rider).to.exist;
       riders.push((rider as IUser).id);
     }));
   });
 
   it('Should get all rides', async () => {
-    const allRides = await rideRepository.getAll();
+    const allRides = await rideService.getAll();
     expect(allRides).to.exist;
     expect(allRides).to.have.length(rides.length);
   });
 
   it('Should update ride source', async () => {
-    const updatedRide = await rideRepository.updateById(rides[1].id, { to: 'רמת אביב' });
+    const updatedRide = await rideService.updateById(rides[1].id, { to: 'רמת אביב' });
     expect(updatedRide).to.exist;
     expect(updatedRide).to.have.property('to', 'רמת אביב');
   });
 
   it('Should find ride', async () => {
-    const ride = await rideRepository.getOneByProps(
+    const ride = await rideService.getOneByProps(
       { _id: rides[0].id }, 'riders');
     expect(ride).to.exist;
     expect((<IRide>ride).id).to.equal(rides[0].id);
@@ -139,7 +139,7 @@ describe('Ride Repository', () => {
 
   it('Should delete ride.', async () => {
     let ride: IRide;
-    expect(ride = await rideRepository.deleteById(rides[0].id) as IRide).to.exist;
+    expect(ride = await rideService.deleteById(rides[0].id) as IRide).to.exist;
     expect(ride).to.have.property('driver');
     expect(ride.driver).to.exist;
     expect(ride.driver).to.equal(driverid);
@@ -173,7 +173,7 @@ describe('Ride Controller', () => {
     expect((<IRide>ride).riders).to.have.length(rides[1].riders.length + 1);
 
     it('Should get rider', async () => {
-      expect(await userRepository.getOneByProps(
+      expect(await userService.getOneByProps(
         { _id: (<IUser>((<IRide>ride).riders[1].rider)).id })).to.exist;
     });
   });
@@ -186,20 +186,12 @@ describe('Ride Controller', () => {
   });
 
   it('Should return all active rides of a rider.', async () => {
-    const rides = await rideController.getRiderActiveRides(riders[2]);
+    const rides = await rideController.getUserActiveRides(riders[2]);
     expect(rides).to.exist;
     expect(rides).to.have.length(rides.filter((r) => {
       return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
     }).length);
   });
-
-  it('Should return all active rides of a driver.', async () => {
-    const rides = await rideController.getDriverActiveRides(driverid);
-    expect(rides).to.exist;
-    expect(rides).to.have.length(rides.filter((r) => {
-      return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
-    }).length);
-  }); 
 
   /*it('Should remove rider from ride', async () => {
     const newRide = await rideController.deleteRider(rides[1].id,

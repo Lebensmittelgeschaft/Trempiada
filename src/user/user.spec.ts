@@ -4,10 +4,10 @@ import { User } from './user.model';
 import { IUser } from './user.interface';
 import * as mongoose from 'mongoose';
 import { config } from '../config';
-import { userRepository } from './user.repository';
+import { userService } from './user.service';
 import { Ride } from '../ride/ride.model';
 import { IRide } from '../ride/ride.interface';
-import { rideRepository } from '../ride/ride.repository';
+import { rideService } from '../ride/ride.service';
 import { userController } from './user.controller';
 import { Notification } from '../notification/notification.model';
 
@@ -35,7 +35,7 @@ before('Clear users test DB.', async () => {
 
 describe('User Repository', () => {
   it('Should give all users.', async () => {
-    expect(await userRepository.getAll()).to.exist;
+    expect(await userService.getAll()).to.exist;
   });
   
   it('Should create test rides.', async () => {
@@ -70,7 +70,7 @@ describe('User Repository', () => {
         isDeleted: false,
       })];
     await Promise.all(ridesToTest.map(async (r) => {
-      const ride = await rideRepository.save(r);
+      const ride = await rideService.save(r);
       expect(ride).to.exist;
       rides.push(ride);
     }));
@@ -86,7 +86,7 @@ describe('User Repository', () => {
       isDeleted: false,
     });
 
-    expect(await userRepository.save(driver)).to.exist;
+    expect(await userService.save(driver)).to.exist;
     const ridersToTest = [new User({
       _id: '2',
       job: 'BobniK',
@@ -104,7 +104,7 @@ describe('User Repository', () => {
         isDeleted: false,
       })];
     await Promise.all(ridersToTest.map(async (u) => {
-      const rider = await userRepository.save(u);
+      const rider = await userService.save(u);
       expect(rider).to.exist;
     }));
   });

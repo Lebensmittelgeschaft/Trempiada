@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { IRide } from './ride.interface';
 import { Ride } from './ride.model';
 
-export class rideRepository {
+export class rideService {
 
   static getAll(conditions?: any, populate?: any, select?: string) {
     if (populate) {

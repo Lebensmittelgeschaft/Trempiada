@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { INotification } from './notification.interface';
+import { userController } from '../user/user.controller';
 
 const notificationSchema = new Schema({
   user: {
@@ -19,6 +20,21 @@ const notificationSchema = new Schema({
     type: Boolean,
     default: false,
   },
+});
+
+notificationSchema.pre('validate', async function (this: INotification, next) {
+  const user = await userController.getById(typeof this.user === 'string' ?
+    this.user : this.user.id);
+  if (user) {
+    next();
+  }
+
+  next(new Error(`Bad request`));
+});
+
+notificationSchema.pre('save', function (this: INotification, next) {
+  this.creationDate = new Date();
+  next();
 });
 
 const notification = model<INotification>('Notification', notificationSchema);

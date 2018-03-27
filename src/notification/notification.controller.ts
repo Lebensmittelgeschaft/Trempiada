@@ -1,19 +1,19 @@
 import { Types } from 'mongoose';
-import { notificationRepository } from './notification.repository';
+import { notificationService } from './notification.service';
 import { INotification } from './notification.interface';
 import { User } from '../user/user.model';
 
 export class notificationController {
   static save(notificaiton: INotification) {
-    return notificationRepository.save(notificaiton);
+    return notificationService.save(notificaiton);
   }
 
   static getAll() {
-    return notificationRepository.getAll({ isRead: false }, { path: 'user', model: User });
+    return notificationService.getAll({ isRead: false }, { path: 'user', model: User });
   }
 
   static getById(id: Types.ObjectId) {
-    return notificationRepository.getOneByProps({ _id: id, isRead: false },
+    return notificationService.getOneByProps({ _id: id, isRead: false },
       { path: 'user', model: User });
   }
 
@@ -26,6 +26,6 @@ export class notificationController {
   }
 
   static getUserNotifications(id: string) {
-    return notificationRepository.getAll({ user: id, isRead: false });
+    return notificationService.getAll({ user: id, isRead: false });
   }
 }

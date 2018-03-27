@@ -37,6 +37,7 @@ app.use('/ride', rideRouter);
 app.use((err,req,res,next) => {
   if (process.env.NODE_ENV === 'dev') console.error(err);
   if (err.name === 'ValidationError' || err.name === 'CastError' ||
+      err.message === 'Bad request' ||
      (err.name === 'MongoError' && err.code === 11000)) res.sendStatus(400);
   else res.sendStatus(500);
 });

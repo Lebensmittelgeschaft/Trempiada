@@ -1,7 +1,7 @@
 import { User } from './user.model';
 import { IUser } from './user.interface';
 
-export class userRepository {
+export class userService {
   
   static getAll(conditions?: any, select?: string) {
     return User.find(conditions || {}, select || {});

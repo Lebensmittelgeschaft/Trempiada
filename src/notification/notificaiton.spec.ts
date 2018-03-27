@@ -7,8 +7,8 @@ import { User } from '../user/user.model';
 import { Notification } from './notification.model';
 import { INotification } from './notification.interface';
 import { IUser } from '../user/user.interface';
-import { notificationRepository } from './notification.repository';
-import { userRepository } from '../user/user.repository';
+import { notificationService } from './notification.service';
+import { userService } from '../user/user.service';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -52,12 +52,12 @@ const notifications = [
 
 describe('Notification repository', () => {
   it('Should save test user', async () => {
-    expect(await userRepository.save(testUser)).to.exist;
+    expect(await userService.save(testUser)).to.exist;
   });
 
   it('Should save notifications', async () => {
     await Promise.all(notifications.map(async (n) => {
-      expect(await notificationRepository.save(n)).to.exist;
+      expect(await notificationService.save(n)).to.exist;
     }));
   });
 });

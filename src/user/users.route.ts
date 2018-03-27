@@ -7,7 +7,6 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   try {
     res.json(await userController.getAll());
-    next();
   } catch (err) {
     next(err);
   }
@@ -15,8 +14,44 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    res.json(await userController.getById(req.params.id));
-    next();
+    const user = await userController.getById(req.params.id);
+    if (user) {
+      res.json(user);
+    } else {
+      res.sendStatus(400);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const user = await userController.save(new User({
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      job: req.body.job,
+      email: req.body.email,
+    }));
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.sendStatus(400);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:id/cancel', async (req, res, next) => {
+  try {
+    const user = await userController.deleteById(req.params.id);
+    if (user) {
+      res.json(user);
+    } else {
+      res.sendStatus(400);
+    }
   } catch (err) {
     next(err);
   }

@@ -3,7 +3,7 @@ import { INotification } from './notification.interface';
 import { Notification } from './notification.model';
 import { User } from '../user/user.model';
 
-export class notificationRepository {
+export class notificationService {
   static getAll(conditions?: any, populate?: any, select?: string) {
     if (populate) {
       return Notification.find(conditions || {}, select || {}).populate(populate);

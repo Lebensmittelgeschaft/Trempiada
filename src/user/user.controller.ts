@@ -1,4 +1,4 @@
-import { userRepository } from './user.repository';
+import { userService } from './user.service';
 import { INotification } from '../notification/notification.interface';
 import { IRide } from '../ride/ride.interface';
 import { IUser } from './user.interface';
@@ -6,19 +6,19 @@ import { IUser } from './user.interface';
 export class userController {
 
   static getAll() {
-    return userRepository.getAll({ isDeleted: false });
+    return userService.getAll({ isDeleted: false });
   }
 
   static getById(id: string) {
-    return userRepository.getOneByProps({ _id: id });
+    return userService.getOneByProps({ _id: id });
   }
 
   static save(user: IUser) {
-    return userRepository.save(user);
+    return userService.save(user);
   }
 
   static updateById(id: string, update: any) {
-    return userRepository.updateById(id, update);
+    return userService.updateById(id, update);
   }
 
   static deleteById(id: string) {

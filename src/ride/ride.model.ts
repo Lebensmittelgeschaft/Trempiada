@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IRide } from './ride.interface';
+import { userController } from '../user/user.controller';
 
 const rideSchema = new Schema({
   driver: {
@@ -21,7 +22,6 @@ const rideSchema = new Schema({
       type: Date,
       required: true,
     },
-    default: [],
   }],
   from: {
     type: String,
@@ -44,16 +44,21 @@ const rideSchema = new Schema({
   },
 });
 
-rideSchema.pre('validate', function (this: IRide, next) {
-  if (this.riders.length <= this.maxRiders) {
+rideSchema.pre('validate', async function (this: IRide, next) {
+  const driver = await userController.getById(typeof this.driver === 'string' ?
+    this.driver : this.driver.id);
+  if (driver &&
+      this.riders.length <= this.maxRiders &&
+      this.to !== this.from) {
     next();
   }
 
-  next(new Error(`Ride is full.`));
+  next(new Error(`Bad request`));
 });
 
 rideSchema.pre('save', function (this: IRide, next) {
   this.creationDate = new Date();
+  next();
 });
 
 const ride = model<IRide>('Ride', rideSchema);
