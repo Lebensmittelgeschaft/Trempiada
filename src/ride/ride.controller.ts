@@ -9,8 +9,13 @@ import { userController } from '../user/user.controller';
 
 export class rideController {
 
-  static getAll(select?: string) {
-    return rideService.getAll({
+  static getAll(page?: number, size?: number, select?: string) {
+    return page && size && page > 0 && size > 0 ? 
+    rideService.getAll({
+      departureDate: { $gte: new Date() },
+      isDeleted: false,
+    }, { path: 'driver riders.rider', model: User }, select).skip((page - 1) * size).limit(size) :
+    rideService.getAll({
       departureDate: { $gte: new Date() },
       isDeleted: false,
     }, { path: 'driver riders.rider', model: User }, select);

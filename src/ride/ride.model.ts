@@ -18,7 +18,7 @@ const rideSchema = new Schema({
       required: true,
       ref: 'User',
     },
-    joinDate: { 
+    joinDate: {
       type: Date,
       required: true,
     },

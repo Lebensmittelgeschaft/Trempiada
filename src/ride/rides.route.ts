@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await rideController.getAll());
+    res.json(await rideController.getAll(parseInt(req.query.page), parseInt(req.query.size)));
   } catch (err) {
     next(err);
   }

@@ -19,6 +19,7 @@ mongoose.connect(config.mongodbUrl, (err) => {
     console.log(`Succeesfully connected to: ${config.mongodbUrl}`);
   }
 });
+mongoose.set('debug', process.env.NODE_ENV === 'dev' ? true : false);
 
 const app = express();
 
