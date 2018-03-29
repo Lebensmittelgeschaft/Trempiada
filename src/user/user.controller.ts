@@ -2,6 +2,7 @@ import { userService } from './user.service';
 import { INotification } from '../notification/notification.interface';
 import { IRide } from '../ride/ride.interface';
 import { IUser } from './user.interface';
+import { rideService } from '../ride/ride.service';
 
 export class userController {
 
@@ -13,8 +14,8 @@ export class userController {
     return userService.getOneByProps({ _id: id });
   }
 
-  static save(user: IUser) {
-    return userService.save(user);
+  static create(user: IUser) {
+    return userService.create(user);
   }
 
   static updateById(id: string, update: any) {
@@ -23,5 +24,15 @@ export class userController {
 
   static deleteById(id: string) {
     return this.updateById(id, { isDeleted: true });
+  }
+
+  static async getUserActiveRides(id: string) {
+    const rides = await rideService.getAll({
+      departureDate: { $gte: new Date() }, isDeleted: false,
+      $or : [{ riders: { $elemMatch: { rider: id } } },
+        { driver: id }],
+    });
+
+    return rides;
   }
 }

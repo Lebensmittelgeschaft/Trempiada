@@ -4,6 +4,10 @@ export const prodConfig = {
   port: process.env.PORT || 80,
 };
 
+export abstract class constants {
+  static readonly MINUTES_IN_MILISECONDS = 60 * 1000;
+}
+
 const devConfig = {
   mongodbUrl: `mongodb://omri:Omri2707@ds113799.mlab.com:13799/trempdb_dev` ||
               `mongodb://dev:dev@ds159187.mlab.com:59187/the_hitchhikers_guide_to_the_galaxy_dev`,

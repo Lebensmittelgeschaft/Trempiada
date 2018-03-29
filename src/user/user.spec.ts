@@ -33,49 +33,11 @@ before('Clear users test DB.', async () => {
   }
 });
 
-describe('User Repository', () => {
+describe('User Service', () => {
   it('Should give all users.', async () => {
     expect(await userService.getAll()).to.exist;
   });
   
-  it('Should create test rides.', async () => {
-    const ridesToTest = [new Ride({
-      driver: driverid,
-      maxRiders: 4,
-      riders: [],
-      from: 'תל אביב',
-      to: 'ראשון לציון',
-      departureDate: new Date(new Date().getTime() + 100000000),
-      creationDate: new Date(),
-      isDeleted: false,
-    }),
-      new Ride({
-        driver: driverid,
-        maxRiders: 4,
-        riders: [],
-        from: 'תל אביב',
-        to: 'ראשון לציון',
-        departureDate: new Date(new Date().getTime() + 100000000),
-        creationDate: new Date(),
-        isDeleted: false,
-      }),
-      new Ride({
-        driver: driverid,
-        maxRiders: 4,
-        riders: [],
-        from: 'תל אביב',
-        to: 'ראשון לציון',
-        departureDate: new Date(new Date().getTime() - 100000000),
-        creationDate: new Date(),
-        isDeleted: false,
-      })];
-    await Promise.all(ridesToTest.map(async (r) => {
-      const ride = await rideService.save(r);
-      expect(ride).to.exist;
-      rides.push(ride);
-    }));
-  });
-
   it('Should create users.', async () => {
     const driver = new User({
       _id: driverid,
@@ -86,7 +48,7 @@ describe('User Repository', () => {
       isDeleted: false,
     });
 
-    expect(await userService.save(driver)).to.exist;
+    expect(await userService.create(driver)).to.exist;
     const ridersToTest = [new User({
       _id: '2',
       job: 'BobniK',
@@ -104,8 +66,43 @@ describe('User Repository', () => {
         isDeleted: false,
       })];
     await Promise.all(ridersToTest.map(async (u) => {
-      const rider = await userService.save(u);
+      const rider = await userService.create(u);
       expect(rider).to.exist;
+    }));
+  });
+
+  it('Should create test rides.', async () => {
+    const ridesToTest = [new Ride({
+      driver: driverid,
+      maxRiders: 4,
+      riders: [],
+      from: 'תל אביב',
+      to: 'ראשון לציון',
+      departureDate: new Date(Date.now() + 10000000000),
+      isDeleted: false,
+    }),
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(Date.now() + 10000000000),
+        isDeleted: false,
+      }),
+      new Ride({
+        driver: driverid,
+        maxRiders: 4,
+        riders: [],
+        from: 'תל אביב',
+        to: 'ראשון לציון',
+        departureDate: new Date(Date.now() - 10000000000),
+        isDeleted: false,
+      })];
+    await Promise.all(ridesToTest.map(async (r) => {
+      const ride = await rideService.create(r);
+      expect(ride).to.exist;
+      rides.push(ride);
     }));
   });
 });
@@ -113,6 +110,14 @@ describe('User Repository', () => {
 describe('User Controller', () => {
   it('Should give all users', async () => {
     expect(await userController.getAll()).to.exist;
+  });
+
+  it('Should return all active rides of a rider.', async () => {
+    const rides = await userController.getUserActiveRides(driverid);
+    expect(rides).to.exist;
+    expect(rides).to.have.length(rides.filter((r) => {
+      return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
+    }).length);
   });
 });
 

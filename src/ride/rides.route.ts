@@ -26,22 +26,9 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.get('/active/:id', async (req, res, next) => {
-  try {
-    const activeUserRides = await rideController.getUserActiveRides(req.params.id);
-    if (activeUserRides) {
-      res.json(activeUserRides);
-    } else {
-      res.sendStatus(400);
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
 router.post('/', async (req, res, next) => {
   try {
-    const ride = await rideController.save(new Ride({
+    const ride = await rideController.create(new Ride({
       driver: req.body.driver,
       maxRiders: parseInt(req.body.maxRiders),
       from: req.body.from,

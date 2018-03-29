@@ -20,7 +20,7 @@ export class notificationService {
     return Notification.findOne(conditions, select || {});
   }
 
-  static save(notification: INotification) {
+  static create(notification: INotification) {
     return notification.save();
   }
 

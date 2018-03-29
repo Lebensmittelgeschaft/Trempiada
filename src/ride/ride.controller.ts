@@ -6,19 +6,21 @@ import { Notification } from '../notification/notification.model';
 import { IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
 import { userController } from '../user/user.controller';
+import { constants } from '../config';
 
 export class rideController {
 
   static getAll(page?: number, size?: number, select?: string) {
-    return page && size && page > 0 && size > 0 ? 
-    rideService.getAll({
-      departureDate: { $gte: new Date() },
-      isDeleted: false,
-    }, { path: 'driver riders.rider', model: User }, select).skip((page - 1) * size).limit(size) :
-    rideService.getAll({
+    let rides = rideService.getAll({
       departureDate: { $gte: new Date() },
       isDeleted: false,
     }, { path: 'driver riders.rider', model: User }, select);
+
+    if(page && size && page > 0 && size > 0) {
+      rides = rides.skip((page - 1) * size).limit(size)
+    }
+
+    return rides;
   }
 
   static getById(id: Types.ObjectId, select?: string) {
@@ -26,18 +28,18 @@ export class rideController {
       { path: 'driver riders.rider', model: User }, select);
   }
 
-  static async save(ride: IRide) {
+  static async create(ride: IRide) {
     const closeRides = await rideService.getAll({
       departureDate: { 
-        $gte: new Date(ride.departureDate.getTime() - 30 * 60 * 1000),
-        $lte: new Date(ride.departureDate.getTime() + 30 * 60 * 1000),
+        $gte: new Date(ride.departureDate.getTime() - 30 * constants.MINUTES_IN_MILISECONDS),
+        $lte: new Date(ride.departureDate.getTime() + 30 * constants.MINUTES_IN_MILISECONDS),
       },
       isDeleted: false,
-      $or : [{ 'riders.rider': { $in: [ride.driver] } },
+      $or : [{ riders: { $elemMatch: { rider: ride.driver } } },
         { driver: ride.driver }], 
     });
 
-    return (closeRides.length === 0) ? rideService.save(ride) : null;
+    return (closeRides.length === 0) ? rideService.create(ride) : null;
   }
 
   static updateById(id: Types.ObjectId, update: any) {
@@ -56,8 +58,8 @@ export class rideController {
     if (ride) {
       ride = await this.deleteById(id);
       if (ride) {
-        await Promise.all(ride.riders.map(r => <IUser>r.rider).map(async (rider) => {
-          await notificationController.save(new Notification({
+        await Promise.all(ride.riders.map(r => <IUser>r.rider).map((rider) => {
+          notificationController.create(new Notification({
             user: rider.id,
             content: `נסיעתך מ ${(<IRide>ride).from} אל ${(<IRide>ride).to}
               בשעה ${(<IRide>ride).departureDate} בוטלה על ידי הנהג.`,
@@ -72,21 +74,18 @@ export class rideController {
 
   static async addRider(rideid: Types.ObjectId, userid: string) {
     const ride = await this.getById(rideid);
-    if (ride) {
+    if (ride && !ride.isDeleted && ride.departureDate.getTime() > new Date().getTime()) {
       const userRides = await rideService.getAll({
         departureDate: { 
-          $gte: new Date(ride.departureDate.getTime() - 30 * 60 * 1000),
-          $lte: new Date(ride.departureDate.getTime() + 30 * 60 * 1000),
+          $gte: new Date(ride.departureDate.getTime() - 30 * constants.MINUTES_IN_MILISECONDS),
+          $lte: new Date(ride.departureDate.getTime() + 30 * constants.MINUTES_IN_MILISECONDS),
         },
         isDeleted: false,
-        $or : [{ 'riders.rider': { $in: [ride.driver] } },
-          { driver: ride.driver }], 
+        $or : [{ riders: { $elemMatch: { rider: userid } } },
+          { driver: userid }], 
       });
-
-      if (!ride.isDeleted &&
-          ride.departureDate > new Date() &&
-          userRides.length === 0) {
-        
+      
+      if (userRides.length === 0) {
         return rideService.updateById(rideid,
                                       { $push: { riders: { rider: userid, joinDate: new Date() } } },
                                       { path: 'driver riders.rider', model: User });
@@ -100,14 +99,5 @@ export class rideController {
     return rideService.updateById(rideid,
                                   { $pull: { riders: { rider: userid } } },
                                   { path: 'driver riders.rider', model: User });
-  }
-
-  static async getUserActiveRides(id: string) {
-    const rides = await rideService.getAll({
-      departureDate: { $gte: new Date() }, isDeleted: false,
-      $or : [{ 'riders.rider': { $in: [id] } }, { driver: id }],
-    });
-
-    return rides;
   }
 }

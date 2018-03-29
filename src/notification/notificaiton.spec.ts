@@ -50,14 +50,14 @@ const notifications = [
     creationDate: new Date(),
   })];
 
-describe('Notification repository', () => {
+describe('Notification Service', () => {
   it('Should save test user', async () => {
-    expect(await userService.save(testUser)).to.exist;
+    expect(await userService.create(testUser)).to.exist;
   });
 
   it('Should save notifications', async () => {
     await Promise.all(notifications.map(async (n) => {
-      expect(await notificationService.save(n)).to.exist;
+      expect(await notificationService.create(n)).to.exist;
     }));
   });
 });

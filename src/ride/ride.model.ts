@@ -20,7 +20,7 @@ const rideSchema = new Schema({
     },
     joinDate: {
       type: Date,
-      required: true,
+      default: Date.now()
     },
   }],
   from: {
@@ -37,6 +37,7 @@ const rideSchema = new Schema({
   },
   creationDate: {
     type: Date,
+    default: Date.now()
   },
   isDeleted: {
     type: Boolean,
@@ -54,11 +55,6 @@ rideSchema.pre('validate', async function (this: IRide, next) {
   }
 
   next(new Error(`Bad request`));
-});
-
-rideSchema.pre('save', function (this: IRide, next) {
-  this.creationDate = new Date();
-  next();
 });
 
 const ride = model<IRide>('Ride', rideSchema);

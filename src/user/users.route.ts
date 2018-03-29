@@ -27,7 +27,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const user = await userController.save(new User({
+    const user = await userController.create(new User({
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       job: req.body.job,
@@ -49,6 +49,19 @@ router.delete('/:id/cancel', async (req, res, next) => {
     const user = await userController.deleteById(req.params.id);
     if (user) {
       res.json(user);
+    } else {
+      res.sendStatus(400);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/active/:id', async (req, res, next) => {
+  try {
+    const activeUserRides = await userController.getUserActiveRides(req.params.id);
+    if (activeUserRides) {
+      res.json(activeUserRides);
     } else {
       res.sendStatus(400);
     }

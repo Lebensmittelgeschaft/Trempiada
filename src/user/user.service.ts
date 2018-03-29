@@ -11,7 +11,7 @@ export class userService {
     return User.findOne(conditions, select || {});
   }
 
-  static save(user: IUser) {
+  static create(user: IUser) {
     return user.save();
   }
 

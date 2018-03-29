@@ -4,8 +4,8 @@ import { INotification } from './notification.interface';
 import { User } from '../user/user.model';
 
 export class notificationController {
-  static save(notificaiton: INotification) {
-    return notificationService.save(notificaiton);
+  static create(notificaiton: INotification) {
+    return notificationService.create(notificaiton);
   }
 
   static getAll() {

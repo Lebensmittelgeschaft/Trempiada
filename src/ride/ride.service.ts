@@ -5,22 +5,24 @@ import { Ride } from './ride.model';
 export class rideService {
 
   static getAll(conditions?: any, populate?: any, select?: string) {
+    let rides = Ride.find(conditions || {}, select || {});
     if (populate) {
-      return Ride.find(conditions || {}, select || {}).populate(populate);
+      rides = rides.populate(populate);
     }
-
-    return Ride.find(conditions || {}, select || {});
+    
+    return rides;
   }
 
   static getOneByProps(conditions: any, populate?: any, select?: string) {
+    let ride = Ride.findOne(conditions, select || {});
     if (populate) {
-      return Ride.findOne(conditions, select || {}).populate(populate);
+      ride = ride.populate(populate);
     }
 
-    return Ride.findOne(conditions, select || {});
+    return ride;
   }
 
-  static save(ride: IRide) {
+  static create(ride: IRide) {
     return ride.save();
   }
 
@@ -29,10 +31,11 @@ export class rideService {
   }
 
   static updateById(id: Types.ObjectId, update: any, populate?: any) {
+    let ride = Ride.findByIdAndUpdate(id, update, { new: true });
     if (populate) {
-      return Ride.findByIdAndUpdate(id, update, { new: true }).populate(populate);
+      return ride.populate(populate);
     }
 
-    return Ride.findByIdAndUpdate(id, update, { new: true });
+    return ride;
   }
 }
