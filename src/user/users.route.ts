@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await userController.getAll());
+    return res.json(await userController.getAll());
   } catch (err) {
     next(err);
   }
@@ -15,11 +15,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const user = await userController.getById(req.params.id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.sendStatus(400);
-    }
+    return user ? res.json(user) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -34,11 +30,7 @@ router.post('/', async (req, res, next) => {
       email: req.body.email,
     }));
 
-    if (user) {
-      res.json(user);
-    } else {
-      res.sendStatus(400);
-    }
+    return user ? res.json(user) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -47,11 +39,7 @@ router.post('/', async (req, res, next) => {
 router.delete('/:id/cancel', async (req, res, next) => {
   try {
     const user = await userController.deleteById(req.params.id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.sendStatus(400);
-    }
+    return user ? res.json(user) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -60,11 +48,7 @@ router.delete('/:id/cancel', async (req, res, next) => {
 router.get('/active/:id', async (req, res, next) => {
   try {
     const activeUserRides = await userController.getUserActiveRides(req.params.id);
-    if (activeUserRides) {
-      res.json(activeUserRides);
-    } else {
-      res.sendStatus(400);
-    }
+    return activeUserRides ? res.json(activeUserRides) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }

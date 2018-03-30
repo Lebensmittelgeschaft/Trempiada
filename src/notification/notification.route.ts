@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await notificationController.getAll());
+    return res.json(await notificationController.getAll());
   } catch (err) {
     next(err);
   }
@@ -14,11 +14,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const notification = await notificationController.getById(req.params.id);
-    if (notification) {
-      res.json(notification);
-    } else {
-      res.sendStatus(400);
-    }
+    return notification ? res.json(notification) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -31,11 +27,7 @@ router.post('/', async (req, res, next) => {
       content: req.body.content,
     }));
 
-    if (notification) {
-      res.json(notification);
-    } else {
-      res.sendStatus(400);
-    }
+    return notification ? res.json(notification) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -48,11 +40,7 @@ router.put('/:id', async (req, res, next) => {
       content: req.body.content,
     });
 
-    if (notification) {
-      res.json(notification);
-    } else {
-      res.sendStatus(400);
-    }
+    return notification ? res.json(notification) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -61,11 +49,7 @@ router.put('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const notification = await notificationController.deleteById(req.params.id);
-    if (notification) {
-      res.json(notification);
-    } else {
-      res.sendStatus(400);
-    }
+    return notification ? res.json(notification) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }

@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await rideController.getAll(parseInt(req.query.page), parseInt(req.query.size)));
+    return res.json(await rideController.getAll(parseInt(req.query.page), parseInt(req.query.size)));
   } catch (err) {
     next(err);
   }
@@ -16,11 +16,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const ride = await rideController.getById(req.params.id);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -36,11 +32,7 @@ router.post('/', async (req, res, next) => {
       departureDate: new Date(parseInt(req.body.departureDate)),
     }));
 
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -54,11 +46,7 @@ router.put('/:id', async (req, res, next) => {
       departureDate: req.body.departureDate,
     });
 
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -67,11 +55,7 @@ router.put('/:id', async (req, res, next) => {
 router.put('/:id/join', async (req, res, next) => {
   try {
     const ride = await rideController.addRider(req.params.id, req.body.user);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -80,11 +64,7 @@ router.put('/:id/join', async (req, res, next) => {
 router.put('/:id/leave', async (req, res, next) => {
   try {
     const ride = await rideController.deleteRider(req.params.id, req.body.user);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -93,11 +73,7 @@ router.put('/:id/leave', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const ride = await rideController.deleteById(req.params.id);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -106,11 +82,7 @@ router.delete('/:id', async (req, res, next) => {
 router.delete('/:id/cancel', async (req, res, next) => {
   try {
     const ride = await rideController.cancelRide(req.params.id);
-    if (ride) {
-      res.json(ride);
-    } else {
-      res.sendStatus(400);
-    }
+    return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
