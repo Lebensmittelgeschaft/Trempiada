@@ -18,7 +18,7 @@ router.get('/', async (req, res, next) => {
 
 /**
  * GET /user/3
- * Returns a specific user by its id.
+ * Returns a specific user by id.
  */
 router.get('/:id', async (req, res, next) => {
   try {
