@@ -26,13 +26,15 @@ export class userController {
     return this.updateById(id, { isDeleted: true });
   }
 
-  static async getUserActiveRides(id: string) {
-    const rides = await rideService.getAll({
-      departureDate: { $gte: new Date() }, isDeleted: false,
-      $or : [{ riders: { $elemMatch: { rider: id } } },
-        { driver: id }],
+  static getRides(id: string) {
+    const rides = rideService.getAll({
+      $or : [{ riders: { $elemMatch: { rider: id } } }, { driver: id }]
     });
 
     return rides;
+  }
+
+  static getActiveRides(id: string) {
+    return this.getRides(id).find({departureDate: { $gte: new Date() }, isDeleted: false});
   }
 }
