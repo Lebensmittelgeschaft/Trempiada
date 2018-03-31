@@ -3,6 +3,10 @@ import { notificationController } from './notification.controller';
 import { Notification } from './notification.model';
 const router = express.Router();
 
+/**
+ * GET /notification
+ * Returns all unread notifications.
+ */
 router.get('/', async (req, res, next) => {
   try {
     return res.json(await notificationController.getAll());
@@ -11,6 +15,10 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+/**
+ * GET /notification/5ab755...
+ * Returns a specific notification by id.
+ */
 router.get('/:id', async (req, res, next) => {
   try {
     const notification = await notificationController.getById(req.params.id);
@@ -20,6 +28,10 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * POST /notification
+ * Creates a new notification in the database.
+ */
 router.post('/', async (req, res, next) => {
   try {
     const notification = await notificationController.create(new Notification({
@@ -33,6 +45,10 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+/**
+ * PUT /notification/5ab755...
+ * Updates a notification's details by id.
+ */
 router.put('/:id', async (req, res, next) => {
   try {
     const notification = await notificationController.updateById(req.params.id, {
@@ -46,6 +62,10 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * DELETE /notification/5ab755...
+ * Marks a notification as read.
+ */
 router.delete('/:id', async (req, res, next) => {
   try {
     const notification = await notificationController.deleteById(req.params.id);

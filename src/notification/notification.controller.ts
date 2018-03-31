@@ -4,17 +4,18 @@ import { INotification } from './notification.interface';
 import { User } from '../user/user.model';
 
 export class notificationController {
-  static create(notificaiton: INotification) {
-    return notificationService.create(notificaiton);
-  }
 
   static getAll() {
     return notificationService.getAll({ isRead: false }, { path: 'user', model: User });
   }
 
   static getById(id: Types.ObjectId) {
-    return notificationService.getOneByProps({ _id: id, isRead: false },
+    return notificationService.getOneByProps({ _id: id },
       { path: 'user', model: User });
+  }
+
+  static create(notificaiton: INotification) {
+    return notificationService.create(notificaiton);
   }
 
   static deleteById(id: Types.ObjectId) {
