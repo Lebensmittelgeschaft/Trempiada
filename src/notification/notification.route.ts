@@ -63,12 +63,12 @@ router.put('/:id', async (req, res, next) => {
 });
 
 /**
- * DELETE /notification/5ab755...
+ * PUT /notification/5ab755.../read
  * Marks a notification as read.
  */
-router.delete('/:id', async (req, res, next) => {
+router.put('/:id/read', async (req, res, next) => {
   try {
-    const notification = await notificationController.deleteById(req.params.id);
+    const notification = await notificationController.markAsRead(req.params.id);
     return notification ? res.json(notification) : res.sendStatus(400);
   } catch (err) {
     next(err);
