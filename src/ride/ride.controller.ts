@@ -54,19 +54,16 @@ export class rideController {
 
   static async cancelRide(id: Types.ObjectId) {
     // TODO: Check that the user who made the request is the ride's driver.
-    let ride = await this.getById(id);
+    const ride = await this.deleteById(id);
     if (ride) {
-      ride = await this.deleteById(id);
-      if (ride) {
-        await Promise.all(ride.riders.map(r => <IUser>r.rider).map((rider) => {
-          notificationController.create(new Notification({
-            user: rider.id,
-            content: `נסיעתך מ ${(<IRide>ride).from} אל ${(<IRide>ride).to}
-              בשעה ${(<IRide>ride).departureDate} בוטלה על ידי הנהג.`,
-            creationDate: new Date(),
-          }));
+      await Promise.all(ride.riders.map(r => <IUser>r.rider).map((rider) => {
+        notificationController.create(new Notification({
+          user: rider.id,
+          content: `נסיעתך מ ${(<IRide>ride).from} אל ${(<IRide>ride).to}
+            בשעה ${(<IRide>ride).departureDate} בוטלה על ידי הנהג.`,
+          creationDate: new Date(),
         }));
-      }
+      }));
     }
 
     return ride;
