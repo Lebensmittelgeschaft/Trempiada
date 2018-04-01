@@ -113,9 +113,18 @@ export class rideController {
    */
   static async addRider(rideid: Types.ObjectId, userid: string) {
 
-    // Get the ride by id, in condition that it's active.
-    const ride = await rideService.getOneByProps({ _id: rideid, isDeleted: false, departureDate: { $gte: new Date() } });
+    // Get the ride by id, in condition that it's active
+    // and the user isn't already in that ride.
+    const ride = await rideService.getOneByProps({
+      _id: rideid,
+      isDeleted: false,
+      departureDate: { $gte: new Date() },
+      $or : [{ riders: { $elemMatch: { rider: userid } } },
+        { driver: userid }]
+    });
+
     if (ride) {
+      
       // Get all undeleted rides within range of 24 hours from the new ride's departure time
       // where the new rider is either the driver or a rider in that ride.
       const userRides = await rideService.getAll({
