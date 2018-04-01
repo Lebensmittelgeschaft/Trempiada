@@ -34,6 +34,7 @@ router.get('/:id', async (req, res, next) => {
  * /POST /ride
  * Creates a new ride in the database.
  */
+// TODO: Check that the user who made the request is also the ride driver.
 router.post('/', async (req, res, next) => {
   try {
     const ride = await rideController.create(new Ride({
@@ -54,6 +55,7 @@ router.post('/', async (req, res, next) => {
  * PUT /ride/5ab755...
  * Updates a ride's details by id.
  */
+// TODO: Check that the user who made the request is the ride's driver.
 router.put('/:id', async (req, res, next) => {
   try {
     const ride = await rideController.updateById(req.params.id, {
@@ -87,7 +89,7 @@ router.put('/:id/join', async (req, res, next) => {
  */
 router.put('/:id/leave', async (req, res, next) => {
   try {
-    const ride = await rideController.deleteRider(req.params.id, req.body.user);
+    const ride = await rideController.removeRider(req.params.id, req.body.user);
     return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);
@@ -98,6 +100,7 @@ router.put('/:id/leave', async (req, res, next) => {
  * PUT /ride/5ab755.../cancel
  * Cancels a ride and sends a notification to all its riders.
  */
+// TODO: Check that the user who made the request is the ride's driver.
 router.put('/:id/cancel', async (req, res, next) => {
   try {
     const ride = await rideController.cancelRide(req.params.id);
@@ -111,6 +114,7 @@ router.put('/:id/cancel', async (req, res, next) => {
  * DELETE /ride/5ab755...
  * Marks a ride as deleted.
  */
+// TODO: Check that the user who made the request is the ride's driver.
 router.delete('/:id', async (req, res, next) => {
   try {
     const ride = await rideController.deleteById(req.params.id);
