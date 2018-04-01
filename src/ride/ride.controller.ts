@@ -42,27 +42,26 @@ export class rideController {
 
   /**
    * Creates a new ride in the database.
-   * The driver mustn't be a driver or a rider in another ride
-   * that is within a range of 30 minutes from this ride.
+   * The driver has limited times he can be in a ride in the same day.
    * @param ride Ride to create
    */
   static async create(ride: IRide) {
 
-    // Get all undeleted rides within 30 minutes range from the new ride's departure time
-    // Where the new ride's driver is either the driver or a rider in that ride.
+    // Get all undeleted rides within range of 24 hours from the new ride's departure time
+    // where the new ride's driver is either the driver or a rider in that ride.
     const closeRides = await rideService.getAll({
       departureDate: { 
-        $gte: new Date(ride.departureDate.getTime() - 30 * constants.MINUTES_IN_MILISECONDS),
-        $lte: new Date(ride.departureDate.getTime() + 30 * constants.MINUTES_IN_MILISECONDS),
+        $gte: new Date(ride.departureDate.getTime() - constants.DAY_IN_MILLISECONDS / 2),
+        $lte: new Date(ride.departureDate.getTime() + constants.DAY_IN_MILLISECONDS / 2),
       },
       isDeleted: false,
       $or : [{ riders: { $elemMatch: { rider: ride.driver } } },
         { driver: ride.driver }], 
     });
 
-    // If there are no such rides, create a new ride in the database and return it.
+    // If there are no more than MAX_RIDES_PER_DAY rides, create a new ride in the database and return it.
     // otherwise return null.
-    return (closeRides.length === 0) ? rideService.create(ride) : null;
+    return (closeRides.length <= constants.MAX_RIDES_PER_DAY && ride.departureDate.getTime() > Date.now()) ? rideService.create(ride) : null;
   }
 
   /**
@@ -108,8 +107,7 @@ export class rideController {
 
   /**
    * Adds a rider to a ride.
-   * Rider mustn't be a driver or a rider in another ride
-   * that is within a range of 30 minutes from this ride.
+   * The rider has limited times he can be in a ride in the same day.
    * @param rideid Ride id
    * @param userid User id
    */
@@ -118,21 +116,21 @@ export class rideController {
     // Get the ride by id, in condition that it's active.
     const ride = await rideService.getOneByProps({ _id: rideid, isDeleted: false, departureDate: { $gte: new Date() } });
     if (ride) {
-      // Get all undeleted rides that are within range of 30 minutes from this ride
-      // and the new rider is either a driver or a rider in that ride.
+      // Get all undeleted rides within range of 24 hours from the new ride's departure time
+      // where the new rider is either the driver or a rider in that ride.
       const userRides = await rideService.getAll({
         departureDate: { 
-          $gte: new Date(ride.departureDate.getTime() - 30 * constants.MINUTES_IN_MILISECONDS),
-          $lte: new Date(ride.departureDate.getTime() + 30 * constants.MINUTES_IN_MILISECONDS),
+          $gte: new Date(ride.departureDate.getTime() - constants.DAY_IN_MILLISECONDS / 2),
+          $lte: new Date(ride.departureDate.getTime() + constants.DAY_IN_MILLISECONDS / 2),
         },
         isDeleted: false,
         $or : [{ riders: { $elemMatch: { rider: userid } } },
           { driver: userid }], 
       });
       
-      // If there are no such rides, push the rider to the ride's riders
+      // If there are no more than MAX_RIDES_PER_DAY rides, push the rider to the ride's riders
       // collection and return the ride.
-      if (userRides.length === 0) {
+      if (userRides.length <= constants.MAX_RIDES_PER_DAY) {
         return rideService.updateById(rideid, {
           $push: { riders: { rider: userid, joinDate: new Date() } }
         });

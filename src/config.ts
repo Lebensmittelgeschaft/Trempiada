@@ -5,7 +5,8 @@ export const prodConfig = {
 };
 
 export abstract class constants {
-  static readonly MINUTES_IN_MILISECONDS = 60 * 1000;
+  static readonly DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+  static readonly MAX_RIDES_PER_DAY = 4;
 }
 
 const devConfig = {
