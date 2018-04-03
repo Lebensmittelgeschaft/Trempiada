@@ -22,15 +22,17 @@ export class rideController {
     let rides = rideService.getAll({
       //departureDate: { $gte: new Date() },
       //isDeleted: false,
+      $where: "this.riders.length < this.maxRiders"
     }, { path: 'driver', model: User }, select);
 
     if(page !== undefined && size !== undefined && page >= 0 && size >= 0) {
-      rides = rides.skip(page * size).limit(size);
+      rides = rides.skip(page * size).limit(size).sort({ departureDate: 1});
     }
 
     return [rides.exec(), Ride.count({
         //departureDate: { $gte: new Date() },
         //isDeleted: false,
+        $where: "this.riders.length < this.maxRiders"
       }).exec()];
   }
 
