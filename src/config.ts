@@ -1,29 +1,43 @@
-export const prodConfig = {
-  mongodbUrl: `mongodb://prod:prod@ds159187.mlab.com:59187/
-  the_hitchhikers_guide_to_the_galaxy_prod`,
-  port: process.env.PORT || 80,
-};
-
 export abstract class constants {
   static readonly DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
   static readonly MAX_RIDES_PER_DAY = 4;
 }
 
+const prodConfig = {
+  mongodbUrl: `mongodb://prod:prod@ds159187.mlab.com:59187/
+  the_hitchhikers_guide_to_the_galaxy_prod`,
+  port: process.env.PORT || 80,
+  client: {
+    host: 'http://localhost',
+    port: 4200
+  },
+};
+
 const devConfig = {
-  mongodbUrl: `mongodb://omri:Omri2707@ds113799.mlab.com:13799/trempdb_dev` ||
-              `mongodb://dev:dev@ds159187.mlab.com:59187/the_hitchhikers_guide_to_the_galaxy_dev`,
+  mongodbUrl: `mongodb://omri:Omri2707@ds113799.mlab.com:13799/trempdb_dev`,
   port: process.env.PORT || 3000,
+  client: {
+    host: 'http://localhost',
+    port: 4200
+  },
 };
 
 const testConfig = {
-  mongodbUrl: `mongodb://test:test@ds121889.mlab.com:21889/trempdb_test` ||
-              `mongodb://test:test@ds035059.mlab.com:35059/the_hitchhikers_guide_to_the_galaxy`,
+  mongodbUrl: `mongodb://test:test@ds121889.mlab.com:21889/trempdb_test`,
   port: process.env.PORT || 3000,
+  client: {
+    host: 'http://localhost',
+    port: 4200
+  },
 };
 
 let envConfig = {
   mongodbUrl: ``,
   port: process.env.PORT || 3000,
+  client: {
+    host: 'http://localhost',
+    port: 4200
+  },
 };
 
 switch (process.env.NODE_ENV) {

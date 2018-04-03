@@ -12,11 +12,12 @@ export class notificationService {
    * @param select Paths to select
    */
   static getAll(conditions?: any, populate?: any, select?: string) {
+    let notifications = Notification.find(conditions || {}, select || {});
     if (populate) {
-      return Notification.find(conditions || {}, select || {}).populate(populate);
+      notifications.populate(populate);
     }
 
-    return Notification.find(conditions || {}, select || {});
+    return notifications;
   }
 
   /**
@@ -26,11 +27,12 @@ export class notificationService {
    * @param select Paths to select
    */
   static getOneByProps(conditions: any, populate?: any, select?: string) {
+    let notification = Notification.findOne(conditions, select || {});
     if (populate) {
-      return Notification.findOne(conditions, select || {}).populate(populate);
+      notification = notification.populate(populate);
     }
 
-    return Notification.findOne(conditions, select || {});
+    return notification;
   }
 
   /**
@@ -46,7 +48,6 @@ export class notificationService {
    * @param id Notification id
    */
   static deleteById(id: Types.ObjectId) {
-
     return Notification.findByIdAndRemove(id);
   }
 
@@ -57,10 +58,11 @@ export class notificationService {
    * @param populate Paths to populate
    */
   static updateById(id: Types.ObjectId, update: any, populate?: any) {
+    let notification = Notification.findByIdAndUpdate(id, update, { new: true });
     if (populate) {
-      return Notification.findByIdAndUpdate(id, update, { new: true }).populate(populate);
+      notification.populate(populate);
     }
 
-    return Notification.findByIdAndUpdate(id, update, { new: true });
+    return notification;
   }
 }

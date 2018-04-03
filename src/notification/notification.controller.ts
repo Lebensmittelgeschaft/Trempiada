@@ -9,7 +9,7 @@ export class notificationController {
    * Returns all unread notifications with populated user field.
    */
   static getAll() {
-    return notificationService.getAll({ isRead: false }, { path: 'user', model: User });
+    return notificationService.getAll({ isRead: false });
   }
 
   /**

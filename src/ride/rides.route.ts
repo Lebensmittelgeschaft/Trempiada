@@ -3,6 +3,7 @@ import { Ride } from './ride.model';
 import { IRide } from './ride.interface';
 import { rideController } from './ride.controller';
 import { IUser } from '../user/user.interface';
+import { ICollection } from '../common/collection.interface';
 const router = express.Router();
 
 /**
@@ -11,7 +12,13 @@ const router = express.Router();
  */
 router.get('/', async (req, res, next) => {
   try {
-    return res.json(await rideController.getAll(parseInt(req.query.page), parseInt(req.query.size)));
+    const [rides, count] = await Promise.all<IRide[] | number>(rideController.getAll(parseInt(req.query.page), parseInt(req.query.size)));
+    const ridesCollection: ICollection<IRide> = {
+      set: <IRide[]>rides,
+      totalCount: <number>count
+    };
+    
+    return res.json(ridesCollection);
   } catch (err) {
     next(err);
   }

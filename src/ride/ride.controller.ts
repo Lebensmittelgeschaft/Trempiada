@@ -7,6 +7,7 @@ import { IUser } from '../user/user.interface';
 import { User } from '../user/user.model';
 import { userController } from '../user/user.controller';
 import { constants } from '../config';
+import { Ride } from './ride.model';
 
 export class rideController {
 
@@ -19,15 +20,18 @@ export class rideController {
    */
   static getAll(page?: number, size?: number, select?: string) {
     let rides = rideService.getAll({
-      departureDate: { $gte: new Date() },
-      isDeleted: false,
-    }, { path: 'driver riders.rider', model: User }, select);
+      //departureDate: { $gte: new Date() },
+      //isDeleted: false,
+    }, { path: 'driver', model: User }, select);
 
-    if(page && size && page > 0 && size > 0) {
-      rides = rides.skip((page - 1) * size).limit(size)
+    if(page !== undefined && size !== undefined && page >= 0 && size >= 0) {
+      rides = rides.skip(page * size).limit(size);
     }
 
-    return rides;
+    return [rides.exec(), Ride.count({
+        //departureDate: { $gte: new Date() },
+        //isDeleted: false,
+      }).exec()];
   }
 
   /**
