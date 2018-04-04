@@ -58,4 +58,6 @@ rideSchema.pre('validate', async function (this: IRide, next) {
 });
 
 const ride = model<IRide>('Ride', rideSchema);
+
+export { rideSchema };
 export { ride as Ride };

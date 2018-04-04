@@ -1,6 +1,8 @@
 export abstract class constants {
-  static readonly DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+  static readonly DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
+  static readonly QUARTER_HOUR_IN_MILLISECONDS = 1000 * 60 * 15;
   static readonly MAX_RIDES_PER_DAY = 4;
+  static readonly NAME_REGEX = new RegExp('[a-z\u0590-\u05fe ]', 'i');
 }
 
 const prodConfig = {

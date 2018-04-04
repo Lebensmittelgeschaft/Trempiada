@@ -7,8 +7,8 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as http from 'http';
 import { router } from './router';
-import { userRouter } from './user/users.route';
-import { rideRouter } from './ride/rides.route';
+import { userRouter } from './user/users.router';
+import { rideRouter } from './ride/rides.router';
 import { config } from './config';
 
 (<any>mongoose).Promise = Promise;
@@ -51,14 +51,14 @@ app.use('/user', userRouter);
 app.use('/ride', rideRouter);
 
 // Error handler.
-app.use((err,req,res,next) => {
+app.use((err, req, res, next) => {
   if (process.env.NODE_ENV === 'dev') console.error(err);
   if (err.name === 'ValidationError' || err.name === 'CastError' ||
-      err.message === 'Bad request' ||
+      err.message === 'Bad request' || err.name === 'SyntaxError' ||
      (err.name === 'MongoError' && err.code === 11000)) res.sendStatus(400);
   else res.sendStatus(500);
 });
 
-const server = app.listen(parseInt(<string>config.port), () => {
+const server = app.listen(+config.port, () => {
   console.log(`Server listening on port ${server.address().port}`);
 });

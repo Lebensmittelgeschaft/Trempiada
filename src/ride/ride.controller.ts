@@ -18,22 +18,26 @@ export class rideController {
    * @param size Page size
    * @param select Fields selection of each ride
    */
-  static getAll(page?: number, size?: number, select?: string) {
-    let rides = rideService.getAll({
+  static getAll(page?: number, size?: number, search?: string, select?: string) {
+    let condition: object = {
       //departureDate: { $gte: new Date() },
       //isDeleted: false,
       $where: "this.riders.length < this.maxRiders"
-    }, { path: 'driver', model: User }, select);
+    };
 
-    if(page !== undefined && size !== undefined && page >= 0 && size >= 0) {
-      rides = rides.skip(page * size).limit(size).sort({ departureDate: 1});
+    let populate: any = { path: 'driver', model: User };
+
+    if (search) {
+      condition = { ...condition, ...this.generateSearchConditions(search) };
     }
 
-    return [rides.exec(), Ride.count({
-        //departureDate: { $gte: new Date() },
-        //isDeleted: false,
-        $where: "this.riders.length < this.maxRiders"
-      }).exec()];
+    let rides = rideService.getAll(condition, populate, select);
+
+    if (page !== undefined && size !== undefined && page >= 0 && size >= 0) {
+      rides = rides.skip(page * size).limit(size);
+    }
+
+    return [rides.sort({ departureDate: 1}).exec(), Ride.count(condition).exec()];
   }
 
   /**
@@ -162,5 +166,29 @@ export class rideController {
    */
   static removeRider(rideid: Types.ObjectId, userid: string) {
     return rideService.updateById(rideid, { $pull: { riders: { rider: userid } } });
+  }
+
+  private static generateSearchConditions(search: string): Object {
+    let searchCaseInsensitiveRegex: RegExp = new RegExp(search, 'i');
+    let departureDateSearch: Date;
+    let basicFilter: any = {};
+    if (new Date(search).toDateString() !== 'Invalid Date') {
+      departureDateSearch = new Date(search);
+      basicFilter = {
+        departureDate: {
+          $gte: new Date(departureDateSearch.getTime() - constants.QUARTER_HOUR_IN_MILLISECONDS),
+          $lte: new Date(departureDateSearch.getTime() + constants.QUARTER_HOUR_IN_MILLISECONDS) }
+      };
+    } else if(constants.NAME_REGEX.test(search)) {
+      basicFilter = {
+          $or: [{
+            from: searchCaseInsensitiveRegex
+          }, {
+            to: searchCaseInsensitiveRegex
+          }]
+      };
+    }
+
+    return basicFilter;
   }
 }
