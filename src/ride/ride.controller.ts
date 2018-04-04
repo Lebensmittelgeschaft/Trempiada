@@ -187,6 +187,6 @@ export class rideController {
       });
     }
 
-    return { $and: basicFilter };
+    return basicFilter.length > 0 ? { $and: basicFilter } : {};
   }
 }
