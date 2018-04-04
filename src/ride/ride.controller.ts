@@ -127,8 +127,8 @@ export class rideController {
       _id: rideid,
       isDeleted: false,
       departureDate: { $gte: new Date() },
-      $or : [{ riders: { $elemMatch: { rider: userid } } },
-        { driver: userid }]
+      riders: { $not: { $elemMatch: { rider: userid } } },
+      driver: { $ne: userid }
     });
 
     if (ride) {
@@ -141,7 +141,7 @@ export class rideController {
           $lte: new Date(ride.departureDate.getTime() + constants.DAY_IN_MILLISECONDS / 2),
         },
         isDeleted: false,
-        $or : [{ riders: { $elemMatch: { rider: userid } } },
+        $or : [{ riders:  { $elemMatch: { rider: userid } } },
           { driver: userid }], 
       });
       
