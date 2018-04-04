@@ -18,7 +18,7 @@ export class rideController {
    * @param size Page size
    * @param select Fields selection of each ride
    */
-  static getAll(page?: number, size?: number, search?: string, select?: string) {
+  static getAll(page?: number, size?: number, search?: string, dateFilter?: Date, select?: string) {
     let condition: object = {
       //departureDate: { $gte: new Date() },
       //isDeleted: false,
@@ -27,9 +27,7 @@ export class rideController {
 
     let populate: any = { path: 'driver', model: User };
 
-    if (search) {
-      condition = { ...condition, ...this.generateSearchConditions(search) };
-    }
+    condition = { ...condition, ...this.generateSearchConditions(<string>search, <Date>dateFilter) };
 
     let rides = rideService.getAll(condition, populate, select);
 
@@ -168,27 +166,27 @@ export class rideController {
     return rideService.updateById(rideid, { $pull: { riders: { rider: userid } } });
   }
 
-  private static generateSearchConditions(search: string): Object {
+  private static generateSearchConditions(search: string, dateFilter: Date): Object {
+    let basicFilter: any[] = [];
     let searchCaseInsensitiveRegex: RegExp = new RegExp(search, 'i');
+    if (search && constants.NAME_REGEX.test(search)) {
+      basicFilter.push({
+        $or: [{
+          from: searchCaseInsensitiveRegex
+        }, {
+          to: searchCaseInsensitiveRegex
+        }]
+      });
+    }
     let departureDateSearch: Date;
-    let basicFilter: any = {};
-    if (new Date(search).toDateString() !== 'Invalid Date') {
-      departureDateSearch = new Date(search);
-      basicFilter = {
+    if (dateFilter && dateFilter.toDateString() !== 'Invalid Date') {
+      basicFilter.push({
         departureDate: {
-          $gte: new Date(departureDateSearch.getTime() - constants.QUARTER_HOUR_IN_MILLISECONDS),
-          $lte: new Date(departureDateSearch.getTime() + constants.QUARTER_HOUR_IN_MILLISECONDS) }
-      };
-    } else if(constants.NAME_REGEX.test(search)) {
-      basicFilter = {
-          $or: [{
-            from: searchCaseInsensitiveRegex
-          }, {
-            to: searchCaseInsensitiveRegex
-          }]
-      };
+          $gte: new Date(dateFilter.getTime() - constants.QUARTER_HOUR_IN_MILLISECONDS),
+          $lte: new Date(dateFilter.getTime() + constants.QUARTER_HOUR_IN_MILLISECONDS) }
+      });
     }
 
-    return basicFilter;
+    return { $and: basicFilter };
   }
 }

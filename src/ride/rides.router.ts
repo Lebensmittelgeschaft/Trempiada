@@ -15,7 +15,8 @@ router.get('/', async (req, res, next) => {
     const pageNumber = +req.query.p;
     const pageSize = +req.query.ps;
     const search: string = req.query.q;
-    const [rides, count] = await Promise.all<IRide[] | number>(rideController.getAll(pageNumber, pageSize, search));
+    const dateFilter: Date = new Date(req.query.d);
+    const [rides, count] = await Promise.all<IRide[] | number>(rideController.getAll(pageNumber, pageSize, search, dateFilter));
     const ridesCollection: ICollection<IRide> = {
       set: <IRide[]>rides,
       totalCount: <number>count
