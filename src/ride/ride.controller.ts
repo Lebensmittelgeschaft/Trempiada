@@ -25,7 +25,7 @@ export class rideController {
       $where: "this.riders.length < this.maxRiders"
     };
 
-    let populate: any = { path: 'driver', model: User };
+    let populate: any = { path: 'driver', model: User, select: '-isDeleted -__v' };
 
     condition = { ...condition, ...this.generateSearchConditions(<string>search, <Date>dateFilter) };
 
@@ -45,7 +45,7 @@ export class rideController {
    */
   static getById(id: Types.ObjectId, select?: string) {
     return rideService.getOneByProps({ _id: id },
-      { path: 'driver riders.rider', model: User }, select);
+      { path: 'driver riders.rider', model: User, select: '-isDeleted -__v' }, select);
   }
 
   /**
