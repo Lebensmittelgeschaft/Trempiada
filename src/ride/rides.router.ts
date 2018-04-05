@@ -53,7 +53,7 @@ router.post('/', async (req, res, next) => {
       maxRiders: parseInt(req.body.maxRiders),
       from: req.body.from,
       to: req.body.to,
-      departureDate: new Date(parseInt(req.body.departureDate)),
+      departureDate: new Date(req.body.departureDate),
     }));
 
     return ride ? res.json(ride) : res.sendStatus(400);

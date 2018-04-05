@@ -69,7 +69,7 @@ export class rideController {
 
     // If there are no more than MAX_RIDES_PER_DAY rides, create a new ride in the database and return it.
     // otherwise return null.
-    return (closeRides.length <= constants.MAX_RIDES_PER_DAY && ride.departureDate.getTime() > Date.now()) ? rideService.create(ride) : null;
+    return (closeRides.length < constants.MAX_RIDES_PER_DAY && ride.departureDate.getTime() > Date.now()) ? rideService.create(ride) : null;
   }
 
   /**
