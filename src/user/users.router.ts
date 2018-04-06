@@ -2,6 +2,9 @@ import * as express from 'express';
 import { User } from './user.model';
 import { IUser } from './user.interface';
 import { userController } from './user.controller';
+import { IRide } from '../ride/ride.interface';
+import { ICollection } from '../common/collection.interface';
+import { DocumentQuery, Query } from 'mongoose';
 const router = express.Router();
 
 /**
@@ -33,10 +36,16 @@ router.get('/:id', async (req, res, next) => {
  * GET /user/3/rides
  * Returns all rides of a user.
  */
-router.get('/:id/rides', async (req, res, next) => {
+router.get('/:id/ride', async (req, res, next) => {
   try {
-    const rides = await userController.getRides(req.params.id);
-    return rides ? res.json(rides) : res.sendStatus(400);
+    const [activeRides, count] =
+      await Promise.all<any>(userController.getRides(req.params.id, '-creationDate -isDeleted -__v'));
+    const ridesCollection: ICollection<IRide> = {
+      set: <IRide[]>activeRides,
+      totalCount: <number>count
+    };
+    
+    return ridesCollection.set ? res.json(ridesCollection) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }
@@ -46,10 +55,17 @@ router.get('/:id/rides', async (req, res, next) => {
  * GET /user/3/rides/active
  * Returns all active rides of a user.
  */
-router.get('/:id/rides/active', async (req, res, next) => {
+router.get('/:id/ride/active', async (req, res, next) => {
   try {
-    const activeRides = await userController.getActiveRides(req.params.id);
-    return activeRides ? res.json(activeRides) : res.sendStatus(400);
+    console.log(req.cookies);
+    const [activeRides, count] =
+      await Promise.all<any>(userController.getActiveRides(req.params.id, '-creationDate -isDeleted -__v'));
+    const ridesCollection: ICollection<IRide> = {
+      set: <IRide[]>activeRides,
+      totalCount: <number>count
+    };
+
+    return ridesCollection.set ? res.json(ridesCollection) : res.sendStatus(400);
   } catch (err) {
     next(err);
   }

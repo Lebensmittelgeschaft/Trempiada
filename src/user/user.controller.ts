@@ -3,6 +3,8 @@ import { INotification } from '../notification/notification.interface';
 import { IRide } from '../ride/ride.interface';
 import { IUser } from './user.interface';
 import { rideService } from '../ride/ride.service';
+import { Ride } from '../ride/ride.model';
+import { DocumentQuery, Query } from 'mongoose';
 
 export class userController {
 
@@ -51,10 +53,11 @@ export class userController {
    * or a rider in that ride.
    * @param id User id
    */
-  static getRides(id: string) {
-    return rideService.getAll({
+  static getRides(id: string, select?: string) {
+    const condition = {
       $or : [{ riders: { $elemMatch: { rider: id } } }, { driver: id }]
-    });
+    };
+    return [rideService.getAll(condition, undefined, select), Ride.count(condition)];
   }
 
   /**
@@ -62,7 +65,12 @@ export class userController {
    * or a rider in that ride.
    * @param id User id
    */
-  static getActiveRides(id: string) {
-    return this.getRides(id).find({departureDate: { $gte: new Date() }, isDeleted: false});
+  static getActiveRides(id: string, select?: string) {
+    const condition = {
+      departureDate: { $gte: new Date() }, isDeleted: false,
+      $or : [{ riders: { $elemMatch: { rider: id } } }, { driver: id }]
+    };
+    
+    return [rideService.getAll(condition, undefined, select), Ride.count(condition)];
   }
 }

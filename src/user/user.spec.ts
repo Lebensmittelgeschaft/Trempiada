@@ -113,7 +113,7 @@ describe('User Controller', () => {
   });
 
   it('Should return all active rides of a rider.', async () => {
-    const rides = await userController.getActiveRides(driverid);
+    const [rides, count] = await Promise.all<any>(userController.getActiveRides(driverid));
     expect(rides).to.exist;
     expect(rides).to.have.length(rides.filter((r) => {
       return r.driver === driverid && r.departureDate >= new Date() && !r.isDeleted;
