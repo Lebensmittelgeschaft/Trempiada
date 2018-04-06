@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
     const pageSize = +req.query.ps;
     const search: string = req.query.q;
     const dateFilter: Date = new Date(req.query.d);
-    const [rides, count] = await Promise.all<IRide[] | number>(rideController.getAll(pageNumber, pageSize, search, dateFilter, '-creationDate -isDeleted -__v'));
+    const [rides, count] = await Promise.all<IRide[] | number>(rideController.getAll(pageNumber, pageSize, search, dateFilter, '-isDeleted -__v'));
     const ridesCollection: ICollection<IRide> = {
       set: <IRide[]>rides,
       totalCount: <number>count
@@ -34,7 +34,7 @@ router.get('/', async (req, res, next) => {
  */
 router.get('/:id', async (req, res, next) => {
   try {
-    const ride = await rideController.getById(req.params.id, '-creationDate -isDeleted -__v');
+    const ride = await rideController.getById(req.params.id, '-isDeleted -__v');
     return ride ? res.json(ride) : res.sendStatus(400);
   } catch (err) {
     next(err);

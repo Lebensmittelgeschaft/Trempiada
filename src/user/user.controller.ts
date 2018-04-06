@@ -5,6 +5,7 @@ import { IUser } from './user.interface';
 import { rideService } from '../ride/ride.service';
 import { Ride } from '../ride/ride.model';
 import { DocumentQuery, Query } from 'mongoose';
+import { User } from './user.model';
 
 export class userController {
 
@@ -53,11 +54,17 @@ export class userController {
    * or a rider in that ride.
    * @param id User id
    */
-  static getRides(id: string, select?: string) {
+  static getRides(id: string, page?: number, size?: number, select?: string) {
     const condition = {
       $or : [{ riders: { $elemMatch: { rider: id } } }, { driver: id }]
     };
-    return [rideService.getAll(condition, undefined, select), Ride.count(condition)];
+
+    let rides = rideService.getAll(condition, { path: 'driver', model: User, select: '-__v -isDeleted' }, select);
+    if (page !== undefined && size !== undefined && page >= 0 && size >= 0) {
+      rides = rides.skip(page * size).limit(size);
+    }
+
+    return [rides.sort({ departureDate: 1}), Ride.count(condition)];
   }
 
   /**
@@ -65,12 +72,17 @@ export class userController {
    * or a rider in that ride.
    * @param id User id
    */
-  static getActiveRides(id: string, select?: string) {
+  static getActiveRides(id: string, page?: number, size?: number, select?: string) {
     const condition = {
       departureDate: { $gte: new Date() }, isDeleted: false,
       $or : [{ riders: { $elemMatch: { rider: id } } }, { driver: id }]
     };
+
+    let rides = rideService.getAll(condition, { path: 'driver', model: User, select: '-__v -isDeleted' }, select);
+    if (page !== undefined && size !== undefined && page >= 0 && size >= 0) {
+      rides = rides.skip(page * size).limit(size);
+    }
     
-    return [rideService.getAll(condition, undefined, select), Ride.count(condition)];
+    return [rides.sort({ departureDate: 1}), Ride.count(condition)];
   }
 }

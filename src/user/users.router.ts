@@ -38,8 +38,10 @@ router.get('/:id', async (req, res, next) => {
  */
 router.get('/:id/ride', async (req, res, next) => {
   try {
+    const pageNumber = +req.query.p;
+    const pageSize = +req.query.ps;
     const [activeRides, count] =
-      await Promise.all<any>(userController.getRides(req.params.id, '-creationDate -isDeleted -__v'));
+      await Promise.all<any>(userController.getRides(req.params.id, pageNumber, pageSize, '-isDeleted -__v'));
     const ridesCollection: ICollection<IRide> = {
       set: <IRide[]>activeRides,
       totalCount: <number>count
@@ -57,9 +59,10 @@ router.get('/:id/ride', async (req, res, next) => {
  */
 router.get('/:id/ride/active', async (req, res, next) => {
   try {
-    console.log(req.cookies);
+    const pageNumber = +req.query.p;
+    const pageSize = +req.query.ps;
     const [activeRides, count] =
-      await Promise.all<any>(userController.getActiveRides(req.params.id, '-creationDate -isDeleted -__v'));
+      await Promise.all<any>(userController.getActiveRides(req.params.id, pageNumber, pageSize, '-isDeleted -__v'));
     const ridesCollection: ICollection<IRide> = {
       set: <IRide[]>activeRides,
       totalCount: <number>count
