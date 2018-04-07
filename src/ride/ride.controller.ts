@@ -20,8 +20,8 @@ export class rideController {
    */
   static getAll(page?: number, size?: number, search?: string, dateFilter?: Date, select?: string) {
     let condition: object = {
-      //departureDate: { $gte: new Date() },
-      //isDeleted: false,
+      departureDate: { $gte: new Date() },
+      isDeleted: false,
       $where: "this.riders.length < this.maxRiders"
     };
 

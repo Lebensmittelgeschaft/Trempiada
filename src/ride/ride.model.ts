@@ -20,7 +20,7 @@ const rideSchema = new Schema({
     },
     joinDate: {
       type: Date,
-      default: Date.now()
+      default: new Date()
     },
   }],
   from: {
@@ -37,7 +37,7 @@ const rideSchema = new Schema({
   },
   creationDate: {
     type: Date,
-    default: Date.now()
+    default: new Date()
   },
   isDeleted: {
     type: Boolean,
