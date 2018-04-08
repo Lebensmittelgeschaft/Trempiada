@@ -15,6 +15,15 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/user/:id', async (req, res, next) => {
+  try {
+    const notifications = await notificationController.getUserNotifications(req.params.id);
+    return notifications ? res.json(notifications) : res.sendStatus(400);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /**
  * GET /notification/5ab755...
  * Returns a specific notification by id.

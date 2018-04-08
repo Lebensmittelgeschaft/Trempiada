@@ -8,6 +8,7 @@ import { User } from '../user/user.model';
 import { userController } from '../user/user.controller';
 import { constants } from '../config';
 import { Ride } from './ride.model';
+import * as moment from 'moment';
 
 export class rideController {
 
@@ -44,7 +45,7 @@ export class rideController {
    * @param select Field selection
    */
   static getById(id: Types.ObjectId, select?: string) {
-    return rideService.getOneByProps({ _id: id },
+    return rideService.getOneByProps({ _id: id, isDeleted: false },
       { path: 'driver riders.rider', model: User, select: '-isDeleted -__v' }, select);
   }
 
@@ -101,11 +102,12 @@ export class rideController {
 
       // Create a new notification for each rider of the canceled ride
       // that the ride was canceled.
-      await Promise.all(ride.riders.map(r => <IUser>r.rider).map((rider) => {
+      await Promise.all(ride.riders.map(r => <string>r.rider).map((rider) => {
+        const departureDateFormatted = moment(ride.departureDate).format('DD/MM/YYYY');
+        const departureTimeFormatted = moment(ride.departureDate).format('HH:mm');
         notificationController.create(new Notification({
-          user: rider.id,
-          content: `נסיעתך מ ${ride.from} אל ${ride.to}
-            בשעה ${ride.departureDate} בוטלה על ידי הנהג.`,
+          user: rider,
+          content: `נסיעתך מ${ride.from} אל ${ride.to} בתאריך ${departureDateFormatted} בשעה ${departureTimeFormatted} בוטלה על ידי הנהג.`,
         }));
       }));
     }

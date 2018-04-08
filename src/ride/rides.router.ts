@@ -72,7 +72,8 @@ router.put('/:id', async (req, res, next) => {
     const ride = await rideController.updateById(req.params.id, {
       from: req.body.from,
       to: req.body.to,
-      departureDate: req.body.departureDate,
+      departureDate: new Date(req.body.departureDate),
+      maxRiders: +req.body.maxRiders
     });
 
     return ride ? res.json(ride) : res.sendStatus(400);

@@ -10,6 +10,7 @@ import { router } from './router';
 import { userRouter } from './user/users.router';
 import { rideRouter } from './ride/rides.router';
 import { config } from './config';
+import { notificationRouter } from './notification/notification.router';
 
 (<any>mongoose).Promise = Promise;
 mongoose.connect(config.mongodbUrl, (err) => {
@@ -42,7 +43,7 @@ app.use(function (req, res, next) {
   // Request headers you wish to allow
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
-  res.cookie('sid', '16');
+  res.cookie('sid', '10');
 
   // Pass to next layer of middleware
   next();
@@ -51,6 +52,7 @@ app.use(function (req, res, next) {
 app.use('/', router);
 app.use('/user', userRouter);
 app.use('/ride', rideRouter);
+app.use('/notification', notificationRouter);
 
 // Error handler.
 app.use((err, req, res, next) => {
