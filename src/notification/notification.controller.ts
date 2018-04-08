@@ -8,17 +8,17 @@ export class notificationController {
   /**
    * Returns all unread notifications with populated user field.
    */
-  static getAll() {
-    return notificationService.getAll({ isRead: false });
+  static getAll(populate?: any, select?: string) {
+    return notificationService.getAll({ isRead: false }, populate, select);
   }
 
   /**
    * Returns a specific notification by id.
    * @param id Notification id
    */
-  static getById(id: Types.ObjectId) {
+  static getById(id: Types.ObjectId, select?: string) {
     return notificationService.getOneByProps({ _id: id },
-      { path: 'user', model: User });
+      { path: 'user', model: User }, select);
   }
 
   /**
@@ -51,6 +51,6 @@ export class notificationController {
    * @param id User id
    */
   static getUserNotifications(id: string) {
-    return notificationService.getAll({ user: id, isRead: false });
+    return notificationService.getAll({ user: id, isRead: false }, undefined, '-__v');
   }
 }

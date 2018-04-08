@@ -9,7 +9,7 @@ const router = express.Router();
  */
 router.get('/', async (req, res, next) => {
   try {
-    return res.json(await notificationController.getAll());
+    return res.json(await notificationController.getAll(undefined, '-__v'));
   } catch (err) {
     next(err);
   }

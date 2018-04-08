@@ -69,14 +69,20 @@ router.post('/', async (req, res, next) => {
 // TODO: Check that the user who made the request is the ride's driver.
 router.put('/:id', async (req, res, next) => {
   try {
-    const ride = await rideController.updateById(req.params.id, {
+    const ride = await rideController.getById(req.params.id);
+    const rideUpdate = <IRide>{
       from: req.body.from,
       to: req.body.to,
       departureDate: new Date(req.body.departureDate),
       maxRiders: +req.body.maxRiders
-    });
+    };
+    
+    if (ride && ride.riders.length <= rideUpdate.maxRiders) {
+      const updatedRide = await rideController.updateById(req.params.id, rideUpdate);
+      return updatedRide ? res.json(updatedRide) : res.sendStatus(400);
+    }
 
-    return ride ? res.json(ride) : res.sendStatus(400);
+    return res.sendStatus(400);
   } catch (err) {
     next(err);
   }
