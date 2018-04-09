@@ -107,7 +107,7 @@ export class rideController {
         const departureTimeFormatted = moment(ride.departureDate).format('HH:mm');
         notificationController.create(new Notification({
           user: rider,
-          content: `נסיעתך מ${ride.from} אל ${ride.to} בתאריך ${departureDateFormatted} בשעה ${departureTimeFormatted} בוטלה על ידי הנהג.`,
+          content: `נסיעתך מ${ride.from} אל ${ride.to} בתאריך ${departureDateFormatted} בשעה ${departureTimeFormatted} בוטלה על ידי הנהג.`
         }));
       }));
     }
@@ -133,7 +133,9 @@ export class rideController {
       driver: { $ne: userid }
     });
 
-    if (ride) {
+    const user = await userController.getById(userid);
+
+    if (ride && user) {
       
       // Get all undeleted rides within range of 24 hours from the new ride's departure time
       // where the new rider is either the driver or a rider in that ride.
@@ -150,9 +152,20 @@ export class rideController {
       // If there are no more than MAX_RIDES_PER_DAY rides, push the rider to the ride's riders
       // collection and return the ride.
       if (userRides.length <= constants.MAX_RIDES_PER_DAY) {
-        return rideService.updateById(rideid, {
+        const updatedRide = await rideService.updateById(rideid, {
           $push: { riders: { rider: userid, joinDate: new Date() } }
         });
+
+        if (updatedRide) {
+          const departureDateFormatted = moment(ride.departureDate).format('DD/MM/YYYY');
+          const departureTimeFormatted = moment(ride.departureDate).format('HH:mm');
+          await notificationController.create(new Notification({
+            user: ride.driver,
+            content: `${user.firstname + ' ' + user.lastname} הצטרף לנסיעתך מ${ride.from} אל ${ride.to} בתאריך ${departureDateFormatted} בשעה ${departureTimeFormatted}.`
+          }));
+
+          return updatedRide;
+        }
       }
     }
 
