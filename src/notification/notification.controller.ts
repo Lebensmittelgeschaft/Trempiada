@@ -43,7 +43,7 @@ export class notificationController {
    * @param update The updated notification
    */
   static updateById(id: Types.ObjectId, update: any) {
-    return notificationController.updateById(id, update);
+    return notificationService.updateById(id, update);
   }
 
   /**

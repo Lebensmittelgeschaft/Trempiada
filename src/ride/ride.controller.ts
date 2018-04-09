@@ -154,7 +154,7 @@ export class rideController {
       if (userRides.length <= constants.MAX_RIDES_PER_DAY) {
         const updatedRide = await rideService.updateById(rideid, {
           $push: { riders: { rider: userid, joinDate: new Date() } }
-        });
+        }, { path: 'driver', model: User });
 
         if (updatedRide) {
           const departureDateFormatted = moment(ride.departureDate).format('DD/MM/YYYY');
@@ -177,8 +177,25 @@ export class rideController {
    * @param rideid Ride id
    * @param userid User id
    */
-  static removeRider(rideid: Types.ObjectId, userid: string) {
-    return rideService.updateById(rideid, { $pull: { riders: { rider: userid } } });
+  static async removeRider(rideid: Types.ObjectId, userid: string) {
+    const user = await userController.getById(userid);
+    const ride = await rideController.getById(rideid);
+    if (ride && user && ride.riders.map(r => (<IUser>r.rider).id).indexOf(userid) !== -1) {
+      const updatedRide = await rideService.updateById(rideid, { $pull: { riders: { rider: userid } } });
+
+      if (updatedRide) {
+        const departureDateFormatted = moment(ride.departureDate).format('DD/MM/YYYY');
+        const departureTimeFormatted = moment(ride.departureDate).format('HH:mm');
+        await notificationController.create(new Notification({
+          user: ride.driver,
+          content: `${user.firstname + ' ' + user.lastname} עזב את נסיעתך מ${ride.from} אל ${ride.to} בתאריך ${departureDateFormatted} בשעה ${departureTimeFormatted}.`
+        }));
+
+        return updatedRide;
+      }
+    }
+
+    return null;
   }
 
   private static generateSearchConditions(search: string, dateFilter: Date): Object {
